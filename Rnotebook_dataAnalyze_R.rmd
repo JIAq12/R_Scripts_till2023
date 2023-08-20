@@ -1,0 +1,1984 @@
+---
+title: "R Notebook for linLAB R scripts"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc: yes
+  html_notebook:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+mainfont: SimSun
+---
+## Part I: Data Analysis for bulk RNA-seq
+### 1. geneID Transformation and Cpm Calculation
+```{r "geneID transformation and cpm calculation"}
+library('clusterProfiler') 
+library(org.Mm.eg.db)
+library(ggplot2)
+library(gplots)
+library(vegan)
+library(permute)
+library(lattice)
+library(limma) 
+library(edgeR)
+library("ggdendro")
+#BiocManager::install("ggdendro", version = "3.8")
+library("cowplot")
+library('biomaRt')
+library("curl")
+dir_save = "D:\\Linlab\\OCT4 induction\\Function\\SEQ220117_TNP\\matrix" ##this is the dir for saving data
+
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+TNP0<-read.table("TNP0_Fcounts.txt",row.names = 1)
+TNP12<-read.table("TNP12_Fcounts.txt",row.names = 1)
+TNP24<-read.table("TNP24_Fcounts.txt",row.names = 1)
+TNP36<-read.table("TNP36_Fcounts.txt",row.names = 1)
+TNP3<-read.table("TNP3_Fcounts.txt",row.names = 1)
+TNP48<-read.table("TNP48_Fcounts.txt",row.names = 1)
+TNP6<-read.table("TNP6_Fcounts.txt",row.names = 1)
+TNP9<-read.table("TNP9_Fcounts.txt",row.names = 1)
+TNPD0<-read.table("TNPD0_Fcounts.txt",row.names = 1)
+TNPD12<-read.table("TNPD12_Fcounts.txt",row.names = 1)
+TNPD24<-read.table("TNPD24_Fcounts.txt",row.names = 1)
+TNPD36<-read.table("TNPD36_Fcounts.txt",row.names = 1)
+TNPD3<-read.table("TNPD3_Fcounts.txt",row.names = 1)
+TNPD48<-read.table("TNPD48_Fcounts.txt",row.names = 1)
+TNPD60<-read.table("TNPD60_Fcounts.txt",row.names = 1)
+TNPD6<-read.table("TNPD6_Fcounts.txt",row.names = 1)
+TNPD9<-read.table("TNPD9_Fcounts.txt",row.names = 1)
+
+total_matrix<-cbind(TNP0[,6],TNP3[,6],TNP6[,6],TNP9[,6],TNP12[,6],TNP24[,6],TNP36[,6],TNP48[,6],
+                    TNPD0[,6],TNPD3[,6],TNPD6[,6],TNPD9[,6],TNPD12[,6],TNPD24[,6],TNPD36[,6],TNPD48[,6],TNPD60[,6])
+rownames(total_matrix)<-rownames(TNP0)
+colnames(total_matrix)<-c("TNP0","TNP3","TNP6","TNP9","TNP12","TNP24","TNP36","TNP48",
+                          "TNPD0","TNPD3","TNPD6","TNPD9","TNPD12","TNPD24","TNPD36","TNPD48","TNPD60")
+write.csv(total_matrix[-1,],"total_count.csv")
+
+count_EO<- read.csv("total_count.csv", header = TRUE, row.name= 1)
+count_EO<-as.data.frame(count_EO)
+#genes_outlier<-c("ENSMUSG00000102693","ENSMUSG00000064842")
+#total<-rownames(count_EO)
+#sub<-! total %in% genes_outlier
+#count_EO<-count_EO[sub,]
+#count_EO<-count_EO[-1,] ###delete the first row (message)
+#Change the original file to make the first row is the sum of the column
+#delete the dropout genes by nascent RNA coutns
+#count_EO0<-count_EO[,c(2,10,12,14,16,18)]
+count_EO<-rbind(colSums(count_EO),count_EO)
+count_EO[count_EO == 0] <- 0.01
+
+keep.exprs <- rowSums(count_EO>5)>=(ncol(count_EO)/2)
+count_EO00 <- count_EO[keep.exprs,]
+count_EO00<-as.data.frame(count_EO00)
+#calculate the cpm:
+dataNormed_count_EO <- apply(count_EO00,2,function(x) as.numeric(x)*1000000/as.numeric(x[1]))
+rownames(dataNormed_count_EO)<-row.names(count_EO00)
+write.csv(dataNormed_count_EO, file = "raw_data_cpm.csv")
+#delete the first row and reread the csv file
+
+###change it to geneID:
+count_EO<- read.csv("raw_data_cpm.csv", header = TRUE,row.names = 1)
+count_EO<-as.data.frame(count_EO)
+#change the name to geneID
+#you need to connect to the internet while do the following things
+mart = useMart(host="uswest.ensembl.org", 
+               biomart="ENSEMBL_MART_ENSEMBL", 
+               dataset="mmusculus_gene_ensembl")
+mart_infos <- getBM(attributes=c('ensembl_gene_id',
+                                 'external_gene_name'),mart = mart)
+#geneID1 <- getBM(attributes=c("external_gene_name"),
+#                 filters = "ensembl_gene_id",
+#                 values = row.names(count_EO), mart = mart)
+head(mart_infos)
+rownames(mart_infos)<-mart_infos[,1]
+cluster<-count_EO[as.character(mart_infos[,1]),]
+#cluster2<-count_EO[as.character(mart_infos[,1]),]
+
+cluster_set<-cbind(mart_infos[,2],cluster[,])
+nrow(cluster_set)
+##remove the gene outside the database:
+cluster_set_final<-na.omit(cluster_set)
+nrow(cluster_set_final)
+### remove duplicated genes
+cluster_set_final_ORDER<-cluster_set_final[order(cluster_set_final[,2],decreasing=T),]
+index<-duplicated(cluster_set_final_ORDER[,1])
+cluster_set_finalorder<-cluster_set_final_ORDER[!index,]
+##write.table(cluster_set_finalorder, file = "mapping_total_cpm_geneID.csv",row.names=FALSE,sep="\t",eol = "\n")
+#write.csv(cluster_set_finalorder, file = "raw_data_cpm_geneID.csv",row.names=FALSE)
+
+rownames(cluster_set_finalorder)<-cluster_set_finalorder[,1]
+cluster_set_finalorder<-as.data.frame(cluster_set_finalorder[,-1])
+
+#write.csv(cluster_set_finalorder,"total_matrix_gene_ID.csv")
+```
+
+### 2. INSPEcT for Intronic Reads Detection in Bulk RNA-seq
+```{r "INSPEcT for intronic reads detection in bulk RNA-seq"}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+#options(download.file.method="libcurl")
+#BiocManager::install("INSPEcT")
+library("INSPEcT")
+dir_save = "D:\\Linlab\\OCT4 induction\\database\\RNA-seq_INSPECT" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+
+#load the data
+require(TxDb.Mmusculus.UCSC.mm9.knownGene)
+txdb <- TxDb.Mmusculus.UCSC.mm9.knownGene
+
+#require(TxDb.Hsapiens.UCSC.hg38.knownGene)
+#txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+
+bamfiles_paths<-c("D:\\Linlab\\OCT4 induction\\database\\RNA-seq_INSPECT\\test_inspect\\partial59.bam","D:\\Linlab\\OCT4 induction\\database\\RNA-seq_INSPECT\\test_inspect\\partial60.bam")
+#4 sample BAM files (2 time points, 2 replicates each, as specified with the argument experimentalDesign)
+#experimentalDesign=c(0,0,1,1))
+#you need at least one rep
+exprFromBAM <- quantifyExpressionsFromBAMs(txdb=txdb
+                                           , BAMfiles=bamfiles_paths
+                                           , by = 'gene'
+                                           , allowMultiOverlap = FALSE
+                                           , strandSpecific = 0
+                                           , experimentalDesign=c(0,0))
+names(exprFromBAM)
+exprFromBAM$countsStats
+intron_counts<-exprFromBAM[["intronsCounts"]]
+exon_counts<-exprFromBAM[["exonsCounts"]]
+genes_id<-intersect(rownames(intron_counts),rownames(exon_counts))
+intron_counts_inte<-intron_counts[genes_id,]
+exon_counts_inte<-exon_counts[genes_id,]
+write.csv(intron_counts_inte,"intron_count.csv")
+write.csv(exon_counts_inte,"exon_count.csv")
+
+intron_exp<-exprFromBAM[["intronsExpressions"]]
+exon_exp<-exprFromBAM[["exonsExpressions"]]
+genes_id<-intersect(rownames(intron_exp),rownames(exon_exp))
+intron_exp_inte<-intron_exp[genes_id,]
+exon_exp_inte<-exon_exp[genes_id,]
+write.csv(intron_exp_inte,"intron_exp.csv")
+write.csv(exon_exp_inte,"exon_exp.csv")
+```
+
+### 3. Calculate mRNA Decay Rate by Intronic Reads
+```{r "Calculate mRNA decay rate by intronic reads"}
+dir_save = "D:\\Linlab\\OCT4 induction\\database\\RNA-seq_INSPECT\\test_inspect\\2i_serum\\E14" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+library(ggplot2)
+library(dplyr)
+exon<-as.data.frame(read.csv("exon_count.csv"))
+intron<-as.data.frame(read.csv("intron_count.csv"))
+
+rate_serum<-intron[,"X0_rep1"]/exon[,"X0_rep1"]
+rate_serum[intron[,"X0_rep1"] <= 5] <- NA
+rate_serum[exon[,"X0_rep1"] <= 5] <- NA
+rate_se<-as.data.frame(rate_serum)
+rownames(rate_se)<-exon[,1]
+
+rate_2i<-intron[,"X1_rep1"]/exon[,"X1_rep1"]
+rate_2i[intron[,"X1_rep1"] <= 5] <- NA
+rate_2i[exon[,"X1_rep1"] <= 5] <- NA
+rate_2ii<-as.data.frame(rate_2i)
+rownames(rate_2ii)<-exon[,1]
+rate_total<-cbind(rate_2ii,rate_se)
+rate_total2<-na.omit(rate_total)
+
+ggplot(rate_total2, aes(x=log2(as.numeric(as.character(rate_2i))), y=log2(as.numeric(as.character(rate_serum))))) +
+  geom_point(size = 2,colour="lightcoral") +
+  #colour="lightcoral"
+  labs(x = "log2(Degradation rate) (2i)", y = "log2(Degradation rate) (Serum)")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  ylim(-10,8)+
+  xlim(-10,8)+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA), 
+    panel.grid.minor = element_blank(), 
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))+
+  geom_abline(slope=1,lwd=0.8,intercept = 0)
+
+#log2FC
+rateFC<-log2(rate_total2[,"rate_2i"]/rate_total2[,"rate_serum"])
+FCH<-rateFC>=1
+length(rateFC[FCH])
+FCL<-rateFC<0
+rate2<-rateFC[FCL]
+FCLL<-abs(rate2)>=1
+length(rateFC[FCLL])
+
+##rep2 (rRNA dep, strand specific)
+rate2_se2rum2<-intron[,"X0_rep2"]/exon[,"X0_rep2"]
+rate2_se2rum2[intron[,"X0_rep2"] <= 5] <- NA
+rate2_se2rum2[exon[,"X0_rep2"] <= 5] <- NA
+rate2_se2<-as.data.frame(rate2_se2rum2)
+rownames(rate2_se2)<-exon[,1]
+
+rate2_2i2<-intron[,"X1_rep2"]/exon[,"X1_rep2"]
+rate2_2i2[intron[,"X1_rep2"] <= 5] <- NA
+rate2_2i2[exon[,"X1_rep2"] <= 5] <- NA
+rate2_2i2i<-as.data.frame(rate2_2i2)
+rownames(rate2_2i2i)<-exon[,1]
+rate2_total<-cbind(rate2_2i2i,rate2_se2)
+rate2_total2<-na.omit(rate2_total)
+
+ggplot(rate2_total2, aes(x=log2(as.numeric(as.character(rate2_2i2))), y=log2(as.numeric(as.character(rate2_se2rum2))))) +
+  geom_point(size = 2,colour="lightcoral") +
+  #colour="lightcoral"
+  labs(x = "log2(Degradation rate2) (2i2)", y = "log2(Degradation rate2) (serum2)")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  ylim(-10,8)+
+  xlim(-10,8)+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA), 
+    panel.grid.minor = element_blank(), 
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))+
+  geom_abline(slope=1,lwd=0.8,intercept = 0)
+
+#log2FC
+rateFC<-log2(rate2_total2[,"rate2_2i2"]/rate2_total2[,"rate2_se2rum2"])
+FCH<-rateFC>=1
+length(rateFC[FCH])
+FCL<-rateFC<0
+rate2<-rateFC[FCL]
+FCLL<-abs(rate2)>=1
+length(rateFC[FCLL])
+```
+
+### 4. Differentially Expressed Gene Analysis by Deseq2
+```{r "Differentially expressed gene analysis by Deseq2"}
+library(DESeq2)
+library(dplyr)
+#BiocManager::valid()
+dir_save = "D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\DEG" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+countdata <- read.csv("es2i_es2iD.csv", header = T,row.names = 1)
+countdata = countdata[rowMeans(countdata) > 1,]
+col_data<-cbind(colnames(countdata),c("OE","WT","OE","WT"))
+rownames(col_data)<-col_data[,1]
+colnames(col_data)<-c("name","condition")
+
+dds <-  DESeqDataSetFromMatrix(countData = countdata,colData = col_data,design = ~ condition) 
+dim(dds)
+dep <- DESeq(dds)
+res <- results(dep)
+diff = res
+diff <- na.omit(diff)  ## 去除NA
+dim(diff)
+```
+
+### 5. Differentially Expressed Gene Analysis by edgeR
+```{r "Differentially expressed gene analysis by edgeR"}
+library("edgeR")
+library("fdrtool")
+dir_save = "D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\DEG" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+rawdata <- read.csv("es2i_espri.csv", header = T,row.names = 1)
+test_id<-read.csv("gene_symbol.csv")
+rawdata2<-na.omit(cbind(test_id[,2],rawdata[test_id[,1],]))
+rawdata <- rawdata2[!duplicated(rawdata2[,1]),]
+rownames(rawdata)<-rawdata[,1]
+rawdata<-rawdata[,-1]
+
+group <- factor(c("OE","WT","OE","WT"))
+y <- DGEList(counts = rawdata, genes = rownames(rawdata), group = group)
+#过滤
+keep <- rowSums(cpm(y)>1) >= 1
+y <- y[keep,,keep.lib.sizes=FALSE]
+##TMM 标准化
+y <- calcNormFactors(y)
+
+bcv <- 0.2
+et <- exactTest(y, dispersion=bcv^2)
+topTags(et)
+summary(de <- decideTestsDGE(et))
+###图形展示检验结果
+png('pri_2i_MAplot.png')
+detags <- rownames(y)[as.logical(de)];
+plotSmear(et, de.tags=detags)
+abline(h=c(-4, 4), col="blue");
+dev.off()
+
+DE <- et$table
+res <- DE
+head(DE)
+res$FDRP <- p.adjust(res$PValue,method = "fdr",n=length(res$PValue))
+#res$logP <- -log10(res$FDRP)
+head(res)
+
+diffsig <- res[(res$FDRP < 0.05 & abs(res$logFC) > 1),]
+dim(diffsig)
+write.csv(diffsig,"diffsig_2i_pri.csv")
+
+## 新增一列，标显著性
+res$Group <- "Not"
+######
+res$Group[which((res$FDRP < 0.05) & (res$logFC > 1))] = "Up"
+res$Group[which((res$FDRP < 0.05) & (res$logFC < -1))] = "Down"
+#### 查看DE数目
+table(res$Group)
+#-----------
+```
+
+### 6. Get the Reactome Pathway Gene List
+```{r "Get the reactome pathway gene list"}
+library(ReactomePA)
+library(reactome.db)
+ls("package:reactome.db")
+dir_save = "D:\\Linlab\\OCT4 induction\\mechanism\\classifier_220705_sc02\\lasso" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+#[1] "reactome"              "reactome_dbconn"       "reactome_dbfile"       "reactome_dbInfo"       "reactome_dbschema"    
+#[6] "reactome.db"           "reactomeEXTID2PATHID"  "reactomeGO2REACTOMEID" "reactomeMAPCOUNTS"     "reactomePATHID2EXTID" 
+#[11] "reactomePATHID2NAME"   "reactomePATHNAME2ID"   "reactomeREACTOMEID2GO"
+keytypes(reactome.db)
+#[1] "ENTREZID"   "GO"         "PATHID"     "PATHNAME"   "REACTOMEID"
+Metabolism_of_RNA<- as.list(reactomePATHID2EXTID)$ "R-MMU-71387"
+Metabolism_of_RNA2<- as.list(reactomePATHID2EXTID)$ "R-MMU-8953854"
+
+
+genes <- c(Metabolism_of_RNA)
+write.csv(genes, "genes_Metabolism_of_RNA.csv")
+genes2 <- c(Metabolism_of_RNA2)
+write.csv(genes2, "genes_Metabolism_of_RNA2.csv")
+```
+
+### 7. Detect Increased and Decreased Expression, and Monotonic Expression in Time-series Bulk RNA-seq
+```{r "Detect increased and decreased expression, and monotonic expression in time-series bulk RNA-seq"}
+library(dplyr)
+# ==================================================================
+dir_save = "D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\anova_1115_YMS\\02_heatmap" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+total_matrix <- read.csv("total_matrix_1106.csv")
+gene48 <- read.csv("all_intersect_Venn_final_norRNA.csv")
+gene48_matrix <- merge(gene48, total_matrix, by="X")
+gene48_matrix <- gene48_matrix[,-2:-9]
+write.csv(gene48_matrix,"exp_matrix_166.csv")
+gene48_matrix <- cbind(gene48_matrix[,1:6],gene48_matrix$L2i0b,gene48_matrix$L2i24b,gene48_matrix$L2i48b,gene48_matrix$L2i72b,gene48_matrix[11:14])
+colnames(gene48_matrix)[7:10] <- c("L2i0b","L2i24b","L2i48b","L2i72b")
+
+# 锛?1锛夊垹闄?72h鏁版嵁&绛涢€夋潯浠讹細0>6>24>48 鎴? 0<24<48 submatrix3 (2 genes)
+submatrix1 <- gene48_matrix %>% select("NP0","NP6","NP24","NP48","L2i0b","L2i24b","L2i48b","X2iL48a","X2iL24a","X2iL0b")
+rownames(submatrix1) <- gene48_matrix[,1]
+####0>6>24>48 (monotonic expression pattern) NP
+submatrix2_1 <- submatrix1 %>% filter(submatrix1$NP0-submatrix1$NP6>=0, submatrix1$NP6-submatrix1$NP24>=0, submatrix1$NP24-submatrix1$NP48>=0)
+submatrix2_2 <- submatrix1 %>% filter(submatrix1$NP48-submatrix1$NP24>=0, submatrix1$NP24-submatrix1$NP6>=0,submatrix1$NP6-submatrix1$NP0>=0)
+# 0>6>24>48 (monotonic expression pattern) 2iL
+submatrix3_1 <- submatrix2_1 %>% filter(submatrix2_1$X2iL48a-submatrix2_1$X2iL24a>=0, submatrix2_1$X2iL24a-submatrix2_1$X2iL0b>=0)
+submatrix3_2 <- submatrix2_2 %>% filter(submatrix2_2$X2iL0b-submatrix2_2$X2iL24a>=0,submatrix2_2$X2iL24a-submatrix2_2$X2iL48a>=0)
+submatrix3 <- rbind(submatrix3_1, submatrix3_2)
+submatrix3 <- na.omit(submatrix3)
+
+temp <- submatrix3
+bk = unique(c(seq(-1,1, length=100)))
+pheatmap(temp
+         # annotation_col = annotation_col,
+         ,breaks = bk
+         # ,color = colorRampPalette(c("#ffffcc", "#41b6c4", "#225ea8"))(100)
+         ,cluster_col= FALSE,cluster_rows = TRUE
+         ,show_colnames = T
+         ,scale ="row"
+         ,clustering_method ="ward.D" 
+         ,border_color = "grey"
+         ,show_rownames= T
+         ,gaps_col = c(4,7)) #change it to T if you want to show rownames
+write.csv(submatrix3,"monotonic.csv")
+
+submatrix4_1 <- gene48_matrix %>% filter(NP0-NP6>=0, NP0-NP24>=0, NP0-NP48>=0, NP0-NP72>=0)
+submatrix5_1 <- submatrix4_1 %>% filter(L2i0b-L2i24b>=0, L2i0b-L2i48b>=0, L2i0b-L2i72b>=0)
+submatrix6_1 <- submatrix5_1 %>% filter(X2iL72b-X2iL48a>=0, X2iL72b-X2iL24a>=0, X2iL72b-X2iL0b>=0)
+
+submatrix4_2 <- gene48_matrix %>% filter(NP72-NP0>=0, NP72-NP6>=0, NP72-NP24>=0, NP72-NP48>=0)
+submatrix5_2 <- submatrix4_1 %>% filter(L2i72b-L2i0b>=0, L2i72b-L2i24b>=0, L2i72b-L2i48b>=0)
+submatrix6_2 <- submatrix5_1 %>% filter(X2iL0b-X2iL72b>=0, X2iL0b-X2iL48a>=0, X2iL0b-X2iL24a>=0)
+
+submatrix6 <- rbind(submatrix6_1, submatrix6_2)
+submatrix6 <- na.omit(submatrix6)
+
+temp <- submatrix6[,-1]
+rownames(temp) <- submatrix6[,1]
+temp <- as.numeric(temp)
+
+
+# 锛?3锛夌瓫閫夋潯浠讹細t1+t2 > t3+t4 鎴? t1+t2 < t3+t4 鍦ㄤ笁缁勪腑涓€鑷达細submatrix7 (17 genes)
+submatrix7_1 <- gene48_matrix %>% filter(NP0+NP24>NP48+NP72, L2i0b+L2i24b>L2i48b+L2i72b, X2iL0b+X2iL24a<X2iL48a+X2iL72b)
+submatrix7_2 <- gene48_matrix %>% filter(NP0+NP24<NP48+NP72, L2i0b+L2i24b<L2i48b+L2i72b, X2iL0b+X2iL24a>X2iL48a+X2iL72b)
+submatrix7 <- rbind(submatrix7_1, submatrix7_2)
+submatrix7 <- na.omit(submatrix7)
+
+temp <- submatrix7[,-1]
+temp <- temp[,-2]
+#rownames(temp) <- submatrix7[,1]
+#temp <- as.numeric(temp)
+#temp <- temp %>% select("NP0","NP6","NP24","NP48","L2i0b","L2i24b","L2i48b","X2iL48a","X2iL24a","X2iL0b")
+
+# draw the heatmap of the expression:
+library(pheatmap)
+library(gplots)
+library(vegan)
+library(permute)
+library(lattice)
+#bk = unique(c(seq(0,2, length=100)))
+
+bk = unique(c(seq(-1,1, length=100)))
+rownames(temp)<-submatrix7[,1]
+pheatmap(temp
+         # annotation_col = annotation_col,
+         ,breaks = bk
+         # ,color = colorRampPalette(c("#ffffcc", "#41b6c4", "#225ea8"))(100)
+         ,cluster_col= FALSE,cluster_rows = TRUE
+         ,show_colnames = T
+         ,scale ="row"
+         ,clustering_method ="ward.D" 
+         ,border_color = "grey"
+         #,border_color = FALSE
+         ,show_rownames= T
+         ,gaps_col = c(4,8)) #change it to T if you want to show rownames
+
+write.csv(submatrix7,"last_pre_no6h.csv")
+```
+
+### 8. qPCR Analyzing and Plotting
+```{r "qPCR analyzing and plotting"}
+rm(list = ls(all.names = TRUE))  #delete all the ENV vars
+dir_save = "D:\\Linlab\\OCT4 induction\\mechanism\\verification_PAT_oligoU" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+library(ggplot2)
+##total picture
+exp<-as.data.frame(read.csv("modified_deltaCT_1116.csv"))
+ggplot(data=exp, aes(x=Target.Name, y=deltaCT2, fill=Group)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  geom_text(aes(label=deltaCT2), vjust=1.6, color="black",
+            position = position_dodge(0.9), size=3.5)+
+  scale_fill_brewer(palette="Paired")+
+  theme_minimal()
+
+##extract the a:
+sc_include_a<-c("2i_a","lif_a")
+sc_filted_a<-exp[which(exp[,1] %in% sc_include_a),]
+ggplot(data=sc_filted_a, aes(x=Target.Name, y=deltaCT2, fill=Group)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  geom_text(aes(label=deltaCT2), vjust=1.6, color="black",
+            position = position_dodge(0.9), size=3.5)+
+  scale_fill_brewer(palette="Paired")+
+ # theme_minimal()+
+  labs(x = "Genes", y = "Relative Uridylation")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+
+##extract the r:
+sc_include_r<-c("2i_r","lif_r")
+sc_filted_r<-exp[which(exp[,1] %in% sc_include_r),]
+ggplot(data=sc_filted_r, aes(x=Target.Name, y=deltaCT2, fill=Group)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  geom_text(aes(label=deltaCT2), vjust=1.6, color="black",
+            position = position_dodge(0.9), size=3.5)+
+  scale_fill_brewer(palette="Paired")+
+  # theme_minimal()+
+  labs(x = "Genes", y = "Relative Expression")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+
+
+
+exp_total<-as.data.frame(read.csv("modified_deltaCT_total.csv"))
+sc_include_a<-c("2i_a-2","lif_a-2","lif_a","2i_a")
+sc_filted_a<-exp_total[which(exp_total[,1] %in% sc_include_a),]
+ggplot(data=sc_filted_a, aes(x=GENE, y=Ctmean, fill=GROUP)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  geom_text(aes(label=Ctmean), vjust=1.6, color="black",
+            position = position_dodge(0.9), size=3.5)+
+  scale_fill_brewer(palette="Paired")+
+  # theme_minimal()+
+  labs(x = "Genes", y = "Ct(mean)")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+```
+
+### 9. Linear Regression by lm()
+```{r "Linear regression by lm()"}
+rawdata <- as.data.frame(read.csv("TR_total_filtered.csv",header = TRUE,row.names = 1))
+
+rawdata1<-as.data.frame(na.omit(rawdata[,-1]))
+MAPcorr<-cor(rawdata1,method = "pearson")
+write.csv(MAPcorr,"correlation.csv")
+
+rawdata <- as.data.frame(read.table("TR_total_filtered.csv",header = TRUE,sep=","))
+
+
+logratio_total <- log(rawdata$abTotal_2i+1e-3) - log(rawdata$abTotal_lif+1e-3)
+logratio_tr <- log(rawdata$abTR_2i+1e-3) - log(rawdata$abTR_lif+1e-3)
+logratio_dr <- log(rawdata$X2_DR+1e-3) - log(rawdata$L_DR+1e-3)
+model <- lm(logratio_total~logratio_tr+logratio_dr)
+summary(model)
+
+model1 <- lm(logratio_total~logratio_dr)
+summary(model1)
+
+model2 <- lm(logratio_total~logratio_tr)
+summary(model2)
+
+t.test(rawdata$L_DR, rawdata$X2_DR, paired=TRUE, alternative="less")
+t.test(rawdata$X2_DR, rawdata$L_DR, paired=TRUE, alternative="less")
+
+t.test(rawdata$abTotal_2i, rawdata$abTotal_lif, paired=TRUE, alternative="less")
+t.test(rawdata$abTotal_lif, rawdata$abTotal_2i, paired=TRUE, alternative="less")
+
+t.test(rawdata$abTR_2i, rawdata$abTR_lif, paired=TRUE, alternative="less")
+t.test(rawdata$abTR_lif, rawdata$abTR_2i, paired=TRUE, alternative="less")
+
+logratio_total <- log(rawdata$abTotal_2i+1e-3) - log(rawdata$abTotal_lif+1e-3)
+logratio_tr <- log(rawdata$abTR_2i+1e-3) - log(rawdata$abTR_lif+1e-3)
+logratio_dr <- log(rawdata$X2_DR+1e-3) - log(rawdata$L_DR+1e-3)
+model <- lm(logratio_total~logratio_tr+logratio_dr)
+summary(model)
+
+models <- glm(logratio_total~logratio_tr+logratio_dr)
+summary(models)
+
+logratio_total <- log(rawdata$abTotal_2i+1e-3) - log(rawdata$abTotal_lif+1e-3)
+logratio_tr <- log(rawdata$abTR_2i+1e-3) - log(rawdata$abTR_lif+1e-3)
+logratio_dr <- log(rawdata$X2_DR+1e-3) - log(rawdata$L_DR+1e-3)
+model <- lm(log(rawdata$abTotal_2i+1e-3)~log(rawdata$abTR_2i+1e-3)+log(rawdata$X2_DR+1e-3))
+summary(model)
+model <- lm(log(rawdata$abTotal_2i+1e-3)~log(rawdata$X2_DR+1e-3))
+summary(model)
+model <- lm(log(rawdata$abTotal_2i+1e-3)~log(rawdata$abTR_2i+1e-3))
+summary(model)
+
+model <- lm(log(rawdata$abTotal_lif+1e-3)~log(rawdata$abTR_lif+1e-3)+log(rawdata$L_DR+1e-3))
+summary(model)
+model <- lm(log(rawdata$abTotal_lif+1e-3)~log(rawdata$L_DR+1e-3))
+summary(model)
+model <- lm(log(rawdata$abTotal_lif+1e-3)~log(rawdata$abTR_lif+1e-3))
+summary(model)
+
+##  Plot as a 3D histogram:
+library(plot3D)
+scatter3D(x=log2(rawdata$abTotal_2i+0.001),
+          y=log2(rawdata$abTR_2i+0.001),
+          z=log2(rawdata$X2_DR+0.001),
+          phi=30,theta=30,col=NULL,
+          breaks=NULL,colkey=NULL,panel.first=NULL,
+          clim=NULL,clab=NULL,bty="b",CI=NULL,surf=NULL, add=FALSE, 
+          plot=TRUE)
+```
+
+### 10. Calculate the mRNA Decay Rate by Pulse-Chase Labeling
+```{r "Calculate the mRNA decay rate by pulse-chase labeling"}
+library(ggplot2)
+library(ALL)
+library(pheatmap)
+library(gplots)
+library(vegan)
+library(permute)
+library(lattice)
+library(limma) 
+library(edgeR)
+library("ggdendro")
+#BiocManager::install("ggdendro", version = "3.8")
+library("cowplot")
+library('biomaRt')
+library("curl")
+library("tidyverse")
+library("minpack.lm")
+
+rm(list = ls())  #delete all the ENV vars
+dir_save = "D:\\Linlab\\草稿_article\\figure1\\PulseChase" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+datapc <- read.csv("PC2i_total_210705.csv")
+datapc<-datapc[order(datapc[,"PC0B.Readcount"],decreasing=T),]
+datapc2 <- datapc[!duplicated(datapc[,"Symbol"]),]
+rownames(datapc2)<-datapc2[,1]
+datapc3<-na.omit(datapc2)
+
+parppc <- read.csv("PCpri_total_210705.csv")
+parppc<-parppc[order(parppc[,"pri0A.Readcount"],decreasing=T),]
+parppc2 <- parppc[!duplicated(parppc[,"Symbol"]),]
+rownames(parppc2)<-parppc2[,1]
+parppc3<-na.omit(parppc2)
+
+datapc3_MAP<-datapc3[,c(grep("MAP",colnames(datapc3)))]
+keep.exprs1 <- rowSums(datapc3_MAP>0)>=5
+datapc3_MAP_f <- datapc3_MAP[keep.exprs1,]
+datapc3_MAP_f <- na.omit(datapc3_MAP_f)
+
+####choose the calculation group:
+###DRAW the density plot:
+datapc3_MAP_groups <- datapc3_MAP_f %>% gather(colnames(datapc3_MAP_f)[-1],
+                                               key='class',value='MAP')
+datapc3_MAP_groups<-as.data.frame(datapc3_MAP_groups[,c("class","MAP")])
+#rownames  class  half_life
+#a        value
+ggplot(datapc3_MAP_groups,aes(x=log2(as.numeric(as.character(MAP))),colour=class))+
+  # ylim(0,0.4)+
+  # xlim(2,20)+
+  geom_density(size = 1)+
+  # ggtitle("Yeast") +
+  # labs(y = "Density", x = "log2(total mRNA) (intron/exon)")+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))
+
+##choose the right group: 0B-1B-3C-6A-9A-12A
+datapc<-datapc3_MAP_f[,c("PC0B.MAP","PC1B.MAP","PC3C.MAP","PC6A.MAP","PC9A.MAP","PC12A.MAP")]
+
+timepc <- array(0,dim=c(3,1))
+timepc[2] = 1
+timepc[3] = 3
+timepc[4] = 6
+timepc[5] = 9
+timepc[6] = 12
+
+getPred <- function(lambda, t) exp(-lambda * t)
+jac <- function(lambda, t) -t*exp(-lambda * t)
+
+residFun <- function(lambda,t,observed) abs(observed - getPred(lambda,t))
+
+parpc <- array(0,dim=c(nrow(datapc),1))
+#parppc <- array(0,dim=c(5000,1))
+for (i in 1:nrow(datapc)){
+  nls.out <- nls.lm(0.5,fn = residFun, observed = t(datapc[i,]/datapc[i,1]), t = timepc)
+  parpc[i] <- nls.out$par
+  #  nls.out <- nls.lm(0.5,fn = residFun, observed = t(datappc[i,]/datappc[i,1]), t = timepc)
+  #  parppc[i] <- nls.out$par
+}
+rownames(parpc)<-rownames(datapc)
+#write.table(parpc,"jq2i036.csv",quote = F,sep=',')
+####choose the calculation group for priPC:
+###DRAW the density plot:
+parppc3_MAP<-parppc3[,c(grep("MAP",colnames(parppc3)))]
+keep.exprs2 <- rowSums(parppc3_MAP>0)>=5
+parppc3_MAP_f <- parppc3_MAP[keep.exprs2,]
+parppc3_MAP_f <- na.omit(parppc3_MAP_f)
+####choose the calculation group:
+parppc3_MAP_groups <- parppc3_MAP_f %>% gather(colnames(parppc3_MAP_f)[-1],
+                                               key='class',value='MAP')
+parppc3_MAP_groups<-as.data.frame(parppc3_MAP_groups[,c("class","MAP")])
+#rownames  class  half_life
+#a        value
+ggplot(parppc3_MAP_groups,aes(x=log2(as.numeric(as.character(MAP))),colour=class))+
+  # ylim(0,0.4)+
+  # xlim(2,20)+
+  geom_density(size = 1)+
+  # ggtitle("Yeast") +
+  # labs(y = "Density", x = "log2(total mRNA) (intron/exon)")+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))
+##choose the right group: 0A-1A-3C-6A-9B-12B
+datapripc<-parppc3_MAP_f[,c("pri0A.MAP","pri1A.MAP","pri3C.MAP","pri6A.MAP","pri9B.MAP","pri12B.MAP")]
+
+timepc <- array(0,dim=c(3,1))
+timepc[2] = 1
+timepc[3] = 3
+timepc[4] = 6
+timepc[5] = 9
+timepc[6] = 12
+
+getPred <- function(lambda, t) exp(-lambda * t)
+jac <- function(lambda, t) -t*exp(-lambda * t)
+
+residFun <- function(lambda,t,observed) abs(observed - getPred(lambda,t))
+
+parpripc <- array(0,dim=c(nrow(datapripc),1))
+#parppc <- array(0,dim=c(5000,1))
+for (i in 1:nrow(datapripc)){
+  nls.out <- nls.lm(0.5,fn = residFun, observed = t(datapripc[i,]/datapripc[i,1]), t = timepc)
+  parpripc[i] <- nls.out$par
+  #  nls.out <- nls.lm(0.5,fn = residFun, observed = t(datappc[i,]/datappc[i,1]), t = timepc)
+  #  parppc[i] <- nls.out$par
+}
+rownames(parpripc)<-rownames(datapripc)
+#write.table(parpripc,"jq2i036.csv",quote = F,sep=',')
+
+pc_all<-cbind(parpripc[intersect(rownames(parpripc),rownames(parpc)),],
+              parpc[intersect(rownames(parpripc),rownames(parpc)),])
+colnames(pc_all)<-c("PC_Pri","PC_2i")
+pc_all<-as.data.frame(pc_all)
+
+all_matrix_LPC<-read.csv("all_matrix_withLPC.csv",row.names = 1)
+all_matrix_LPC2<-cbind(all_matrix_LPC[intersect(rownames(all_matrix_LPC),rownames(pc_all)),],
+                       pc_all[intersect(rownames(all_matrix_LPC),rownames(pc_all)),])
+
+dot2<-ggplot(all_matrix_LPC2, aes(y=log2(as.numeric(as.character(PC_Pri))), x=log2(as.numeric(as.character(PC_2i))))) +
+  guides(alpha="none") +
+  geom_point(color = "SkyBlue3",alpha=0.2,size = 3)+
+  stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='snow4') +
+  scale_fill_continuous(low="SkyBlue3",high="DodgerBlue4") +
+  ylim(-5,0.2)+
+  xlim(-5,0.2)+
+  labs(x = "log2(Degradation rate) (Pulse-chase labeling for 2i/LIF)", y = "log2(Degradation rate) (Pulse-chase labeling for mEpiLC)")+
+  #geom_point(size = 5,color = "snow3") +
+  #  labs(x = "Stress", y = "Amplitude",
+  #     title = "Transient Pulse")+
+  # scale_colour_manual(values=cc)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))+
+  geom_abline(slope=1,lwd=0.8,intercept = 0)
+#  geom_abline(slope=1,lwd=0.8,intercept = 0)
+plot(dot2)
+
+dot2<-ggplot(all_matrix_LPC2, aes(y=log2(as.numeric(as.character(LPC))), x=log2(as.numeric(as.character(PC_2i))))) +
+  guides(alpha="none") +
+  geom_point(color = "SkyBlue3",alpha=0.2,size = 3)+
+  stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='snow4') +
+  scale_fill_continuous(low="SkyBlue3",high="DodgerBlue4") +
+  ylim(-5,0.2)+
+  xlim(-5,0.2)+
+  labs(x = "log2(Degradation rate) (Pulse-chase labeling for 2i/LIF)", y = "log2(Degradation rate) (Pulse-chase labeling for LPC)")+
+  #geom_point(size = 5,color = "snow3") +
+  #  labs(x = "Stress", y = "Amplitude",
+  #     title = "Transient Pulse")+
+  # scale_colour_manual(values=cc)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))+
+  geom_abline(slope=1,lwd=0.8,intercept = 0)
+#  geom_abline(slope=1,lwd=0.8,intercept = 0)
+plot(dot2)
+
+dot2<-ggplot(all_matrix_LPC2, aes(y=log2(as.numeric(as.character(k..cpm.h.))), x=log2(as.numeric(as.character(PC_2i))))) +
+  guides(alpha="none") +
+  geom_point(color = "SkyBlue3",alpha=0.2,size = 3)+
+  stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='snow4') +
+  scale_fill_continuous(low="SkyBlue3",high="DodgerBlue4") +
+  ylim(-5,0.2)+
+  xlim(-5,0.2)+
+  labs(x = "log2(Degradation rate) (Pulse-chase labeling for 2i/LIF)", y = "log2(Degradation rate) (Pulse-chase labeling for SLAM-seq)")+
+  #geom_point(size = 5,color = "snow3") +
+  #  labs(x = "Stress", y = "Amplitude",
+  #     title = "Transient Pulse")+
+  # scale_colour_manual(values=cc)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))+
+  geom_abline(slope=1,lwd=0.8,intercept = 0)
+#  geom_abline(slope=1,lwd=0.8,intercept = 0)
+plot(dot2)
+```
+
+### 11. Bin Bar Analysis
+```{r "Bin bar analysis"}
+library(ggplot2)
+library(ALL)
+library(pheatmap)
+library(gplots)
+library(vegan)
+library(permute)
+library(lattice)
+library(limma) 
+library(edgeR)
+library("ggdendro")
+#BiocManager::install("ggdendro", version = "3.8")
+library("cowplot")
+library('biomaRt')
+library("curl")
+library("tidyverse")
+#install.packages("ggplot2")
+#install.packages("ggpubr")
+library("ggpubr")
+library(dplyr)
+library(forcats)
+library('clusterProfiler') 
+library(org.Mm.eg.db)
+library(ggplot2)
+library(ALL)
+library(pheatmap)
+library(gplots)
+library(vegan)
+library(permute)
+library(lattice)
+library(limma) 
+library(edgeR)
+library("ggdendro")
+#BiocManager::install("ggdendro", version = "3.8")
+library("cowplot")
+library('biomaRt')
+library("curl")
+library("ggpubr")
+library(dplyr)
+library(forcats)
+library(som)
+library(reshape)
+library(kohonen)
+library(RColorBrewer)
+summarySE_median <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                             conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  # N, mean, and sd
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(N    = length2(xx[[col]]),
+                     mean = mean(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+                     sd   = sd(as.numeric(as.character(xx[[col]])))
+                   )
+                 },
+                 measurevar
+  )
+  # Rename the "mean" column
+  datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+
+summarySE_mean <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                           conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  # N, mean, and sd
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(N    = length2(xx[[col]]),
+                     mean = mean(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+                     sd   = sd(as.numeric(as.character(xx[[col]])))
+                   )
+                 },
+                 measurevar
+  )
+  # Rename the "mean" column
+  datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}     #This is the basic function you need for summarizing the data, especially for error-bar plotting
+
+#rm(list = ls())  #delete all the ENV vars
+dir_save = "D:\\Linlab\\草稿_article\\02_version1\\figure2\\term_U" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+ini_2iP2A_U_stat<-as.data.frame(read.csv("ini_2iP2A_U_stat.csv",row.names = 2))
+ini_Pri_U_stat<-as.data.frame(read.csv("ini_Pri_U_stat.csv",row.names = 2))
+ini_2ipri<-cbind(ini_2iP2A_U_stat[intersect(rownames(ini_2iP2A_U_stat),rownames(ini_Pri_U_stat)),"mean"],
+                 ini_Pri_U_stat[intersect(rownames(ini_2iP2A_U_stat),rownames(ini_Pri_U_stat)),"mean"])
+rownames(ini_2ipri)<-intersect(rownames(ini_2iP2A_U_stat),rownames(ini_Pri_U_stat))
+ini_2ipri<-ini_2ipri[-1,]
+colnames(ini_2ipri)<-c("x2i","pri")
+ini_2ipri<-as.data.frame(ini_2ipri)
+ini_2ipri2<-cbind(ini_2ipri,log2((ini_2ipri$pri+0.00000001)/(ini_2ipri$x2i+0.00000001)))
+
+#make bin could choose:change FC or the pri:
+colnames(ini_2ipri2)<-c("x2i","pri","pri_2i")
+
+##bin and draw the bar plot:
+bin_P<-ini_2ipri2 %>% mutate(U_bin  = cut(pri, breaks=c(-0.0001,0.0001,0.0005,0.001,0.005,0.01,0.05,0.1,0.5,1)))
+##integrate_last_bin
+bin_NP_clipdb<-read.csv("bin_NP_clipdb.csv",row.names = 1)
+bin_all<-cbind(bin_NP_clipdb[intersect(rownames(bin_P),rownames(bin_NP_clipdb)),],
+               bin_P[intersect(rownames(bin_P),rownames(bin_NP_clipdb)),])
+write.csv(bin_all,"bin_NP_clipdb_U.csv")
+##why not draw a dot plot?
+
+library(EnvStats)
+library(ggplot2)
+###8-6
+bin_all2<-bin_all %>% mutate(new_deg  = cut(fc_NP, breaks=c(-0.15,1.1,5)))
+
+p<-bin_all2 %>% 
+  ggplot(aes(new_deg, pri)) + 
+  # geom_violin(aes(fill = class),trim = F) + 
+  #geom_boxplot(alpha=0.7,outlier.shape = NA,outlier.colour = NA) +
+  stat_boxplot(geom = 'errorbar', width = 0.3) + 
+  geom_boxplot(width = 0.8, show.legend = T,outlier.shape = NA,outlier.colour = NA) +
+  ylim(c(-0.6,0.6))+
+  stat_n_text(size = 5, y.pos = 0.2, vjust = 0, color = "black") +
+  #geom_jitter(aes(shape = class)) + 
+  #coord_trans(x = "identity", y = "identity", xlim = NULL, ylim = c(0,0.8))+
+  stat_summary(fun = median, geom = 'point', color = 'dark grey', size = rel(2)) + 
+  #guides(shape = F, color = F) + 
+  labs(x = "mRNA decay rate (log2FC, mEpiLC vs 2i/LIF)", y = "HITS-CLIP Pabpc1 counts(RPKM)")+
+  scale_fill_brewer(palette = 'Set2')+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=24),
+         axis.text.x = element_text(size=16),
+         axis.text.y = element_text(size=22),
+         axis.title = element_text(face="bold"))
+p
+##bin and draw the bar plot:
+bin_NP_fc<-ini_2ipri2 %>% mutate(U_bin_fc  = cut(pri_2i, breaks=c(-30,-1,1,30)))
+##integrate_last_bin
+bin_all<-cbind(bin_NP_clipdb[intersect(rownames(bin_NP_fc),rownames(bin_NP_clipdb)),],
+               bin_NP_fc[intersect(rownames(bin_NP_fc),rownames(bin_NP_clipdb)),])
+write.csv(bin_all,"bin_NP_clipdb_fcU.csv")
+##why not draw a dot plot?
+
+library(EnvStats)
+library(ggplot2)
+###8-6
+#bin_all2<-bin_all %>% mutate(new_deg  = cut(fc_NP, breaks=c(-0.15,1.1,5)))
+p<-bin_all %>% 
+  ggplot(aes(U_bin_fc, fc_NP)) + 
+  # geom_violin(aes(fill = class),trim = F) + 
+  #geom_boxplot(alpha=0.7,outlier.shape = NA,outlier.colour = NA) +
+  stat_boxplot(geom = 'errorbar', width = 0.3) + 
+  geom_boxplot(width = 0.8, show.legend = T,outlier.shape = NA,outlier.colour = NA) +
+  ylim(c(-1,3))+
+  stat_n_text(size = 5, y.pos = -0.5, vjust = 0, color = "black") +
+  #geom_jitter(aes(shape = class)) + 
+  #coord_trans(x = "identity", y = "identity", xlim = NULL, ylim = c(0,0.8))+
+  stat_summary(fun = median, geom = 'point', color = 'dark grey', size = rel(2)) + 
+  #guides(shape = F, color = F) + 
+  labs(x = "U rate (log2FC P/N)", y = "mRNA decay rate (log2FC P/N)")+
+  scale_fill_brewer(palette = 'Set2')+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=24),
+         axis.text.x = element_text(size=16),
+         axis.text.y = element_text(size=22),
+         axis.title = element_text(face="bold"))
+p
+mycomparision <- list(c("(-30,-1]", "(-1,1]"), c("(-30,-1]", "(1,30]"))
+p2 <- p + stat_compare_means(method = 't.test', comparisons = mycomparision, label = 'p.signif',label.y = c(2, 2.5)) +stat_compare_means(method = "anova", label.y = -1,size=6)
+p2
+P1<-ggplot(bin_all, aes(y=log2(as.numeric(as.character(fc_NP))), x=log2(as.numeric(as.character(pri_2i))))) +
+  #stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='snow4') +
+  #scale_fill_continuous(low="SkyBlue3",high="DodgerBlue4") +
+  guides(alpha="none") +
+  geom_point(alpha=2,size = 3)+
+  scale_color_brewer(palette = 'Set2')+
+  labs(x = "U rate", y = "mRNA decay rate (FC:P/N)")+
+  #geom_point(size = 5,color = "snow3") +
+  #  labs(x = "Stress", y = "Amplitude",
+  #     title = "Transient Pulse")+
+  # scale_colour_manual(values=cc)+
+  # ylim(-7,1)+
+  # xlim(-7,1)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))
+#geom_abline(slope=1,lwd=0.8,intercept = 0)
+plot(P1)
+
+
+p<-bin_all2 %>% 
+  ggplot(aes(new_deg, pri_2i)) + 
+  # geom_violin(aes(fill = class),trim = F) + 
+  #geom_boxplot(alpha=0.7,outlier.shape = NA,outlier.colour = NA) +
+  stat_boxplot(geom = 'errorbar', width = 0.3) + 
+  geom_boxplot(width = 0.8, show.legend = T,outlier.shape = NA,outlier.colour = NA) +
+  ylim(c(-0.1,0.1))+
+  stat_n_text(size = 5, y.pos = 0.2, vjust = 0, color = "black") +
+  #geom_jitter(aes(shape = class)) + 
+  #coord_trans(x = "identity", y = "identity", xlim = NULL, ylim = c(0,0.8))+
+  stat_summary(fun = median, geom = 'point', color = 'dark grey', size = rel(2)) + 
+  #guides(shape = F, color = F) + 
+  labs(x = "mRNA decay rate (log2FC, mEpiLC vs 2i/LIF)", y = "HITS-CLIP Pabpc1 counts(RPKM)")+
+  scale_fill_brewer(palette = 'Set2')+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=24),
+         axis.text.x = element_text(size=16),
+         axis.text.y = element_text(size=22),
+         axis.title = element_text(face="bold"))
+p
+
+P1<-ggplot(bin_all, aes(x=log2(as.numeric(as.character(V3))), y=as.numeric(as.character(pri_2i)),colour=log2(as.numeric(as.character(fc_NP))))) +
+  geom_point(size = 2) +
+  #colour="lightcoral"
+  labs(x = "clipdb", y = "U rates(log2FC P/N)")+
+  #scale_fill_continuous(low='#fcbba1',high='#67000d')+
+  scale_colour_gradient2(
+    low = "#1a9850",
+    limits=c(-2, 2),
+    mid = "#ffffbf",
+    midpoint = 0,
+    #space = "Lab",
+    high = "#d73027")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  #ylim(-35,35)+
+  #xlim(-35,35)+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+P1
+
+P1<-ggplot(bin_all, aes(x=log2(as.numeric(as.character(V3))), y=as.numeric(as.character(pri)),colour=log2(as.numeric(as.character(fc_NP))))) +
+  geom_point(size = 2) +
+  #colour="lightcoral"
+  labs(x = "clipdb", y = "U rates(mEpiLC)")+
+  #scale_fill_continuous(low='#fcbba1',high='#67000d')+
+  scale_colour_gradient2(
+    low = "#1a9850",
+    limits=c(-2, 2),
+    mid = "#ffffbf",
+    midpoint = 0,
+    #space = "Lab",
+    high = "#d73027")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  #ylim(-35,35)+
+  #xlim(-35,35)+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+P1
+
+
+P1<-ggplot(bin_all, aes(x=log2(as.numeric(as.character(V3))), y=as.numeric(as.character(fc_NP)))) +
+  #stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='snow4') +
+  #scale_fill_continuous(low="SkyBlue3",high="DodgerBlue4") +
+  guides(alpha="none") +
+  geom_point(alpha=2,size = 3)+
+  scale_color_brewer(palette = 'Set2')+
+  labs(y = "mRNA decay rate(fc_NP)", x = "clipdb Pabpc1")+
+  #geom_point(size = 5,color = "snow3") +
+  #  labs(x = "Stress", y = "Amplitude",
+  #     title = "Transient Pulse")+
+  # scale_colour_manual(values=cc)+
+  # ylim(-7,1)+
+  # xlim(-7,1)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))
+#geom_abline(slope=1,lwd=0.8,intercept = 0)
+plot(P1)
+all_matrix_MAPcorr<-cor(bin_all[,c(-4,-8)],method = "spearman")
+```
+
+
+## Part II: Data Analysis for scRNA-seq
+### 1. Singular for Outlier
+```{r "Singular for outlier"}
+library(fluidigmSC)
+firstRun()
+autoAnalysis()
+```
+
+### 2. geneID Transformation for scRNA-seq
+```{r "geneID transformation for scRNA-seq"}
+library("edgeR")
+library("ggplot2")
+library("ggdendro")
+#BiocManager::install("ggdendro", version = "3.8")
+library("cowplot")
+library('biomaRt')
+library("curl")
+library("clusterProfiler")
+library("org.Hs.eg.db")
+#source("http://bioconductor.org/biocLite.R")
+#BiocManager::install("org.Hs.eg.db")
+
+setwd("D:\\Linlab\\metastasis\\cytoTRACE_P1P2")
+#Trimming the LB size
+matrix_P<-as.matrix(read.csv("raw_matrix_P2.csv",row.names=1))
+
+#Normalizing the results using CPM (per-gene-counts*10*6/total-counts)
+dataNormed_P <- apply(matrix_P,2,function(x) as.numeric(x)*1000000/as.numeric(x[1]))
+rownames(dataNormed_P)<-as.vector(row.names(matrix_P))
+write.csv(dataNormed_P,"dataNormed_P2.csv")
+
+#exchange the geneID of the matrix&trime the cells using LB size
+counts_filtered <- as.data.frame(read.csv("dataNormed_P2.csv", header = TRUE,row.names = 1))
+ensembleid<-as.vector(rownames(counts_filtered))
+eg=bitr(ensembleid,fromType = "ENSEMBL", toType = "SYMBOL",OrgDb = "org.Hs.eg.db")
+cluster<-as.matrix(counts_filtered[eg[,1],])
+cluster_set<-cbind(eg[,2],cluster)
+nrow(cluster_set)
+write.table(cluster_set, file = "dataNormed_P2_geneID.txt",row.names=FALSE,sep="\t",eol = "\n")
+write.csv(cluster_set, file = "dataNormed_P2_geneID.csv",row.names=FALSE)
+
+#integrate two data
+genes_P2<-as.vector(cluster_set[,1])
+matrix_P1<-as.data.frame(read.csv("dedup_dataNormed_P_geneID.csv",row.names=1))
+integrate_P1<-matrix_P1[genes_P2,]
+rownames(cluster_set)<-cluster_set[,1]
+genes_inte<-as.vector(rownames(integrate_P1))
+cluster_set<-as.data.frame(cluster_set)
+integrate_P2<-cluster_set[genes_inte,]
+integrate_P1_P2<-cbind(integrate_P2,integrate_P1)
+write.csv(integrate_P1_P2, file = "integrate_P1P2.csv",row.names=FALSE)
+
+#use the count
+matrix_P<-as.data.frame(read.csv("raw_matrix_P2.csv",row.names=1))
+#counts_filtered <- as.data.frame(read.csv("dataNormed_P2.csv", header = TRUE,row.names = 1))
+ensembleid<-as.vector(rownames(matrix_P))
+eg=bitr(ensembleid,fromType = "ENSEMBL", toType = "SYMBOL",OrgDb = "org.Hs.eg.db")
+cluster2<-as.matrix(matrix_P[eg[,1],])
+cluster_set2<-cbind(eg[,2],cluster2)
+nrow(cluster_set2)
+#write.table(cluster_set, file = "dataNormed_P2_geneID.txt",row.names=FALSE,sep="\t",eol = "\n")
+write.csv(cluster_set2, file = "Count_P2_geneID.csv",row.names=FALSE)
+
+#use the count to integrate
+matrix_P1<-as.data.frame(read.csv("JQW_matrix_P1.csv",row.names=1))
+#counts_filtered <- as.data.frame(read.csv("dataNormed_P2.csv", header = TRUE,row.names = 1))
+ensembleid1<-as.vector(rownames(matrix_P1))
+eg1=bitr(ensembleid1,fromType = "ENSEMBL", toType = "SYMBOL",OrgDb = "org.Hs.eg.db")
+cluster21<-as.matrix(matrix_P1[eg1[,1],])
+cluster_set21<-cbind(eg1[,2],cluster21)
+nrow(cluster_set21)
+#write.table(cluster_set, file = "dataNormed_P2_geneID.txt",row.names=FALSE,sep="\t",eol = "\n")
+write.csv(cluster_set21, file = "Count_P1_geneID.csv",row.names=FALSE)
+
+genes_P1<-as.vector(cluster_set21[,1])
+matrix_P2<-as.data.frame(read.csv("Count_P2_geneID.csv"))
+name<-matrix_P2[,1]
+geneID<-duplicated(name)
+matrix_P2_dedup<-matrix_P1[!geneID,]
+rownames(matrix_P2_dedup)<-matrix_P2_dedup[,1]
+matrix_P2_dedup2<-matrix_P2_dedup[,-1]
+
+integrate_P2<-matrix_P2_dedup2[genes_P1,]
+rownames(cluster_set21)<-cluster_set21[,1]
+genes_inte<-as.vector(rownames(integrate_P2))
+cluster_set21<-as.data.frame(cluster_set21)
+integrate_P1<-cluster_set21[genes_inte,]
+integrate_P1_P2<-cbind(integrate_P2,integrate_P1)
+integrate_P1_P2_new<-na.omit(integrate_P1_P2)
+write.csv(integrate_P1_P2_new, file = "Count_integrate_P1P2.csv",row.names=TRUE)
+```
+
+### 3. Cell Cycle Analysis
+```{r "Cell cycle analysis"}
+BiocManager::install("SC3")
+BiocManager::install("M3Drop")
+BiocManager::install("TSCAN")
+BiocManager::install("pcaMethods")
+BiocManager::install("Seurat")
+BiocManager::install("scater")
+BiocManager::install("scran")
+library(scran)
+library(pcaMethods)
+library(Seurat)
+library(SC3)
+library(TSCAN)
+library(scater)
+library(SingleCellExperiment)
+library(pheatmap)
+library(mclust)
+library("cowplot")
+library('biomaRt')
+library("curl")
+library(ggplot2)
+dir_save = "D:\\Linlab\\metastasis\\cytoTRACE_P1P2" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+count_P1<- read.csv("dataNormed_trimed_integrated_matrix.csv", header = TRUE, row.name= 1)
+count_P1<-as.matrix(count_P1)
+sample_ID<-read.table("sampleID_cytoTRACE.txt",header=FALSE)
+hh.pairs <- readRDS(system.file("exdata", "human_cycle_markers.rds", 
+                                package="scran"))
+
+assignments <- cyclone(count_P1, hh.pairs, 
+                                   gene.names=rownames(count_P1))
+plot(assignments$score$G1, assignments$score$G2M, 
+     xlab="G1 score", ylab="G2/M score", pch=16)
+score<-cbind(assignments$scores,sample_ID[,2])
+colnames(score)<-c("G1","S","G2M","GROUP")
+cc<-c("gray66","gray34","lightpink","lightcoral","white","white","powderblue","darkturquoise")
+ggplot(score, aes(x=as.numeric(as.character(G1)), y=as.numeric(as.character(G2M)),color= GROUP)) +
+  geom_point(size = 4,position=position_jitter(width=.5, height=0)) +
+  labs(x = "G1", y = "G2/M")+
+  scale_colour_manual(values=cc)+
+ # ylim(0,35)+
+  #xlim(0,35)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA), 
+    panel.grid.minor = element_blank(), 
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+
+##TUTORIAL:http://www.360doc.com/content/18/1216/16/52645714_802207394.shtml
+```
+
+### 4. GSVA
+```{r "GSVA"}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager")
+BiocManager::install("GSVA")
+
+install.packages("devtools")
+library(devtools)
+install_github("rcastelo/GSVA")
+igsva()
+
+setwd("D:\\Linlab\\metastasis\\ssGSEA")
+gene_list<-read.csv("stemness_feature.csv",header = TRUE)
+stemness_list <- as.vector(gene_list[,3])
+a <- read.csv('dedup_dataNormed_P_geneID.csv',
+                header = T,
+                row.names=1)
+data<- a[!apply(a,1,sum)==0,]
+pheno <- read.table(file = 'sampleID_P_trimed_outliers_pheno.txt')
+library(genefilter)
+library(GSVA)
+library(Biobase)
+load('gene_set.Rdata')
+igsva()
+gsva(expr, gset.idx.list, annotation,
+     method=c("gsva", "ssgsea", "zscore", "plage"),
+     kcdf=c("Gaussian", "Poisson", "none"),
+     abs.ranking=FALSE,
+     min.sz=1,
+     max.sz=Inf,
+     parallel.sz=0,
+     parallel.type="SOCK",
+     mx.diff=TRUE,
+     tau=switch(method, gsva=1, ssgsea=0.25, NA),
+     ssgsea.norm=TRUE,
+     verbose=TRUE)
+```
+
+### 5. Calculate mRNA Decay Rate by Intronic Reads in scRNA-seq Datasets
+```{r "Calculate mRNA decay rate by intronic reads in scRNA-seq datasets"}
+library(plyr)
+library(dplyr)
+#rm(list = ls())
+
+dir_save = "/storage/disk1/qqqq/sc_datasets_integrate_analysis_220508"
+
+setwd(dir_save)  #set the work dir as the direction for saving data
+print(dir_save)
+
+summarySE_median <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                             conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  # N, mean, and sd
+  datac <- ddply(data, groupvars, .drop=.drop,.fun = function(xx, col) {
+    c(sum    = sum(as.numeric(as.character(xx[[col]]))),
+      N    = length2(xx[[col]]),
+      median = median(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+      sd   = sd(as.numeric(as.character(xx[[col]])))
+    )
+  },
+  measurevar
+  )
+  # Rename the "mean" column
+  # datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+#data_msn2msn_forbar_CFP <- summarySE_median(data_CFP_L2, measurevar="CFP", groupvars=c("frame"))
+
+summarySE_mean <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                           conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  # N, mean, and sd
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(sum    = sum(as.numeric(as.character(xx[[col]]))),
+                     mean = mean(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+                     sd   = sd(as.numeric(as.character(xx[[col]]))),
+                     N    = length2(xx[[col]])
+                   )
+                 },
+                 measurevar
+  )
+  # Rename the "mean" column
+  # datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+
+early_exon <- read.csv("early_exon_inte_all.csv",header=TRUE)
+early_intron <- read.csv("early_intron_inte_all.csv",header=TRUE)
+
+pre_post2_exon <- read.csv("pre_post2_exon_inte_all.csv",header=TRUE)
+pre_post2_intron <- read.csv("pre_post2_intron_inte_all.csv",header=TRUE)
+
+pre_post3_exon <- read.csv("pre_post3_exon_inte_all.csv",header=TRUE)
+pre_post3_intron <- read.csv("pre_post3_intron_inte_all.csv",header=TRUE)
+
+early_total<-merge(early_exon,early_intron,by=c("genes","cell"))
+pre_post2_total<-merge(pre_post2_exon,pre_post2_intron,by=c("genes","cell"))
+pre_post3_total<-merge(pre_post3_exon,pre_post3_intron,by=c("genes","cell"))
+
+##filter cells by 0.4>sum(intron)/sum(exon)>0.09
+early_intron_sum <- as.data.frame(summarySE_median(early_total, measurevar="intron", groupvars=c("cell")))
+early_exon_sum <- as.data.frame(summarySE_median(early_total, measurevar="exon", groupvars=c("cell")))
+early_intron_exon<-as.data.frame(cbind(early_intron_sum$cell,early_intron_sum$sum/early_exon_sum$sum))
+early_intron_exon_filtered<-early_intron_exon[early_intron_exon[,2]<0.4,]
+rownames(early_intron_exon_filtered)<-early_intron_exon_filtered[,1]
+write.csv(early_intron_exon_filtered,"early_cells_filtered.csv")
+
+pre_post2_intron_sum <- as.data.frame(summarySE_median(pre_post2_total, measurevar="intron", groupvars=c("cell")))
+pre_post2_exon_sum <- as.data.frame(summarySE_median(pre_post2_total, measurevar="exon", groupvars=c("cell")))
+pre_post2_intron_exon<-as.data.frame(cbind(pre_post2_intron_sum$cell,pre_post2_intron_sum$sum/pre_post2_exon_sum$sum))
+pre_post2_intron_exon_filtered<-pre_post2_intron_exon[pre_post2_intron_exon[,2]<0.4,]
+rownames(pre_post2_intron_exon_filtered)<-pre_post2_intron_exon_filtered[,1]
+write.csv(pre_post2_intron_exon_filtered,"pre_post2_cells_filtered.csv")
+
+pre_post3_intron_sum <- as.data.frame(summarySE_median(pre_post3_total, measurevar="intron", groupvars=c("cell")))
+pre_post3_exon_sum <- as.data.frame(summarySE_median(pre_post3_total, measurevar="exon", groupvars=c("cell")))
+pre_post3_intron_exon<- as.data.frame(cbind(pre_post3_intron_sum$cell,pre_post3_intron_sum$sum/pre_post3_exon_sum$sum))
+pre_post3_intron_exon_filtered<-pre_post3_intron_exon[pre_post3_intron_exon[,2]<0.4,]
+pre_post3_intron_exon_filtered<-pre_post3_intron_exon_filtered[pre_post3_intron_exon_filtered[,2]>0.09,]
+rownames(pre_post3_intron_exon_filtered)<-pre_post3_intron_exon_filtered[,1]
+write.csv(pre_post3_intron_exon_filtered,"pre_post3_cells_filtered.csv")
+
+#######early_total
+#######pre_post2_total
+#######pre_post3_total
+#filter genes if intron & exon = 0 (all should >0)
+keep.exprs1 <- rowSums(early_total[,c("intron","exon")]>0)>=2
+early_total_2 <- early_total[keep.exprs1,]
+keep.exprs2 <- rowSums(pre_post2_total[,c("intron","exon")]>0)>=2
+pre_post2_total_2 <- pre_post2_total[keep.exprs2,]
+keep.exprs3 <- rowSums(pre_post3_total[,c("intron","exon")]>0)>=2
+pre_post3_total_2 <- pre_post3_total[keep.exprs3,]
+
+#######changed the intron count to log2(intron count + 0.1) exon count to log2(exon count+0.1)
+#filter genes if intron/exon = 0
+early_total_22<-cbind(early_total_2,c(early_total_2[,"intron"]+early_total_2[,"exon"]),c(early_total_2[,"intron"]/early_total_2[,"exon"]))
+colnames(early_total_22)<-c(colnames(early_total_2),"counts","half_life")
+write.csv(early_total_22,"early_DR_median.csv")
+
+pre_post2_total_22<-cbind(pre_post2_total_2,c(pre_post2_total_2[,"intron"]+pre_post2_total_2[,"exon"]),c(pre_post2_total_2[,"intron"]/pre_post2_total_2[,"exon"]))
+colnames(pre_post2_total_22)<-c(colnames(pre_post2_total_2),"counts","half_life")
+write.csv(pre_post2_total_22,"pre_post2_DR_median.csv")
+
+pre_post3_total_22<-cbind(pre_post3_total_2,c(pre_post3_total_2[,"intron"]+pre_post3_total_2[,"exon"]),c(pre_post3_total_2[,"intron"]/pre_post3_total_2[,"exon"]))
+colnames(pre_post3_total_22)<-c(colnames(pre_post3_total_2),"counts","half_life")
+write.csv(pre_post3_total_22,"pre_post3_DR_median.csv")
+
+#calculate the DR_median
+#filter the cells by gene numbers >2000
+dr_median_early <- as.data.frame(summarySE_median(early_total_22, measurevar="half_life", groupvars=c("cell")))
+dr_median_early_filtered <- dr_median_early[dr_median_early$N>2000,]
+write.csv(dr_median_early_filtered,"early_DR_median_filtered.csv")
+
+dr_median_pre_post2 <- as.data.frame(summarySE_median(pre_post2_total_22, measurevar="half_life", groupvars=c("cell")))
+dr_median_pre_post2_filtered <- dr_median_pre_post2[dr_median_pre_post2$N>2000,]
+write.csv(dr_median_pre_post2_filtered,"pre_post2_DR_median_filtered.csv")
+
+dr_median_pre_post3 <- as.data.frame(summarySE_median(pre_post3_total_22, measurevar="half_life", groupvars=c("cell")))
+dr_median_pre_post3_filtered <- dr_median_pre_post3[dr_median_pre_post3$N>2000,]
+write.csv(dr_median_pre_post3_filtered,"pre_post3_DR_median_filtered.csv")
+
+
+#useless:
+
+annotation_group<-read.csv("anno_info.csv",row.names = 1)
+annotation_group2<-annotation_group[dr_median[,"cell"],]
+sc_total_filted_geness3<-cbind(dr_median,annotation_group2)
+
+#integrate the group info:
+write.table(sc_total_filted_geness3,"cell_DR_median_stage.tsv")
+write.csv(sc_total_filted_geness3,"cell_DR_median_stage.csv")
+
+median
+####draw the cell density curve:
+pdf(file = "drlog2FC_cell_density_all.pdf",width = 12, height = 8)
+p1 <- ggplot(sc_total_filted_geness3,aes(x=as.numeric(as.character(median)),colour=annotation_group2))+
+  # ylim(0,0.4)+
+  # xlim(2,20)+
+  geom_density(size = 1)+
+  # geom_vline(xintercept = log2(0.2796),linetype="dashed")+
+  #geom_vline(xintercept = log2(0.6194),linetype="dashed")+
+  # ggtitle("Yeast") +
+  # labs(y = "Density", x = "log2(total mRNA) (intron/exon)")+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))
+
+print(p1)
+dev.off()
+
+pdf(file = "drlog2FC_cell_box_plot_all.pdf",width = 13, height = 10)
+p2<-
+  ggplot(sc_total_filted_geness3,aes(annotation_group2, median)) +
+  # geom_violin(aes(fill = class),trim = F) +
+  #geom_boxplot(alpha=0.7,outlier.shape = NA,outlier.colour = NA) +
+  stat_boxplot(geom = 'errorbar', width = 0.1) +
+  geom_boxplot(aes(fill = annotation_group2), width = 0.2, show.legend = F,outlier.shape = NA,outlier.colour = NA) +
+  #geom_jitter(aes(shape = class)) +
+  coord_trans(x = "identity", y = "identity", xlim = NULL, ylim = c(-0.25,1))+
+  stat_summary(fun = median, geom = 'point', color = 'dark grey', size = rel(2)) +
+  #guides(shape = F, color = F) +
+  labs(x = "Different scRNA-seq sample", y = "Predicted mRNA turnover parameters for single cells")+
+  scale_fill_brewer(palette = 'Set2')+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=24),
+         axis.text.x = element_text(size=16),
+         axis.text.y = element_text(size=22),
+         axis.title = element_text(face="bold"))
+print(p2)
+dev.off()
+
+##group cells by 1st Qu and 3rd Qu
+#1st Qu.: 0.2796
+#3rd Qu.: 0.6194
+summary(all_matrix_cellHLfc)
+R1<-all_matrix_cellHLfc[,"median"]<=(-0.093866)
+HL_cells_Q1<-all_matrix_cellHLfc[R1,]
+HL_cells_Q1_f<-cbind(HL_cells_Q1,0)
+colnames(HL_cells_Q1_f)<-c(colnames(HL_cells_Q1),"DR_tag")
+R2<-all_matrix_cellHLfc[,"median"]>=0.102582
+HL_cells_Q3<-all_matrix_cellHLfc[R2,]
+HL_cells_Q3_f<-cbind(HL_cells_Q3,1)
+colnames(HL_cells_Q3_f)<-c(colnames(HL_cells_Q3),"DR_tag")
+final_HL_tag<-rbind(HL_cells_Q1_f,HL_cells_Q3_f)
+
+write.table(final_HL_tag,"final_class_HL_tag_Naive1_Primed1.tsv")
+```
+
+### 6. Define Naive and Primed State by Seurat Cell Cycle Module
+```{r "Define naive and primed state by seurat cell cycle module"}
+#install.packages('Seurat')
+rm(list = ls())  #delete all the ENV vars
+library('clusterProfiler') 
+library(org.Mm.eg.db)
+library(ggplot2)
+library(ALL)
+library(pheatmap)
+library(gplots)
+library(vegan)
+library(permute)
+library(lattice)
+library(limma) 
+library(edgeR)
+library("ggdendro")
+#BiocManager::install("ggdendro", version = "3.8")
+library("cowplot")
+library('biomaRt')
+library("curl")
+library(Seurat)
+library(dplyr)
+library(patchwork)
+#devtools::install_github('satijalab/seurat-data')
+
+dir_save = "D:\\Linlab\\OCT4 induction\\mechanism\\classifier_220705" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+
+naive<-read.csv("naive_marker.csv")
+naive.genes<-naive[,1]
+#naive.genes<-c("Zfp42","NrOb1","Fgf4","Nanog","Klf2",
+#               "Tfcp2l1","Tbx3","Esrrb")
+
+formative<-read.csv("formative_marker.csv")
+formative.genes<-formative[,1]
+#formative.genes<-c("Fgf5","Otx2","Oct6","Foxa2",
+#                "Lef1","Nodal")
+gene_id_symbol<- read.csv("gene_id_symbol.csv")
+s.genes <- gene_id_symbol[gene_id_symbol$Symbol %in% naive.genes,1]
+g2m.genes <- gene_id_symbol[gene_id_symbol$Symbol %in% formative.genes,1]
+
+exp_all<-cbind(exp2,exp3[rownames(exp2),])
+exp_all<-na.omit(exp_all)
+exp_all_genes<-exp_all[c(s.genes,g2m.genes),]
+exp_all_f <- exp_all_genes[rowSums(exp_all_genes>0)>=200,]
+
+s.genes2<-intersect(rownames(exp_all_f),s.genes)
+g2m.genes2<-intersect(rownames(exp_all_f),g2m.genes)
+exp2 <-as.data.frame(read.csv("filter_1w_counts_all.csv",header = TRUE,row.names = 2))
+exp2<-exp2[,-1]
+new_id<-gsub("\\.\\d*","",rownames(exp2))
+rownames(exp2)<-new_id
+# Create our Seurat object and complete the initalization steps
+marrow <- CreateSeuratObject(counts = exp2)
+marrow <- NormalizeData(marrow)
+marrow <- FindVariableFeatures(marrow, selection.method = "vst")
+marrow <- ScaleData(marrow, features = rownames(marrow))
+marrow <- CellCycleScoring(marrow, s.features = s.genes2, g2m.features = g2m.genes2, set.ident = TRUE)
+#Warning: The following features are not present in the object: ENSMUSG00000037025, ENSMUSG00000029337, not searching for symbol synonyms
+RidgePlot(marrow, features = c("ENSMUSG00000051176","ENSMUSG00000029337"), ncol = 2)
+#1   Rex1 ENSMUSG00000051176
+#2  Top2a ENSMUSG00000020914
+#3   Mcm6 ENSMUSG00000026355
+#4  Mki67 ENSMUSG00000031004
+#5  Fgf5  ENSMUSG00000029337
+marrow <- RunPCA(marrow, features = c(s.genes, g2m.genes))
+DimPlot(marrow)
+#write.csv(marrow@active.ident,"NP_identity_pre_post2.csv")
+# view cell cycle scores and phase assignments
+head(marrow[[]])
+length(marrow@active.ident[marrow@active.ident=="G1"])
+#61
+length(marrow@active.ident[marrow@active.ident=="G2M"])
+#314
+length(marrow@active.ident[marrow@active.ident=="S"])
+#933
+
+exp3 <-as.data.frame(read.csv("filter_6w_counts_all.csv",header = TRUE,row.names = 2))
+exp3<-exp3[,-1]
+new_id<-gsub("\\.\\d*","",rownames(exp3))
+rownames(exp3)<-new_id
+# Create our Seurat object and complete the initalization steps
+marrow <- CreateSeuratObject(counts = exp3)
+marrow <- NormalizeData(marrow)
+marrow <- FindVariableFeatures(marrow, selection.method = "vst")
+marrow <- ScaleData(marrow, features = rownames(marrow))
+marrow <- CellCycleScoring(marrow, s.features = s.genes2, g2m.features = g2m.genes2, set.ident = TRUE)
+#Warning: The following features are not present in the object: ENSMUSG00000037025, ENSMUSG00000029337, not searching for symbol synonyms
+RidgePlot(marrow, features = c("ENSMUSG00000051176","ENSMUSG00000029337"), ncol = 2)
+#1   Rex1 ENSMUSG00000051176
+#2  Top2a ENSMUSG00000020914
+#3   Mcm6 ENSMUSG00000026355
+#4  Mki67 ENSMUSG00000031004
+#5  Fgf5  ENSMUSG00000029337
+marrow <- RunPCA(marrow, features = c(s.genes, g2m.genes))
+DimPlot(marrow)
+length(marrow@active.ident[marrow@active.ident=="G1"])
+#17
+length(marrow@active.ident[marrow@active.ident=="S"])
+#822
+length(marrow@active.ident[marrow@active.ident=="G2M"])
+#145
+#write.csv(marrow@active.ident,"NP_identity_pre_post3.csv")
+# view cell cycle scores and phase assignments
+head(marrow[[]])
+
+##integrate two datasets:
+mark_N<-gsub("^", "1", colnames(exp2))
+colnames(exp2)<-mark_N
+genes_inte<-intersect(rownames(exp2),rownames(exp3))
+all_matrix<-cbind(exp2[genes_inte,],exp3[genes_inte,])
+# Create our Seurat object and complete the initalization steps
+marrow2 <- CreateSeuratObject(counts = all_matrix)
+marrow2 <- NormalizeData(marrow2)
+marrow2 <- FindVariableFeatures(marrow2, selection.method = "vst")
+marrow2 <- ScaleData(marrow2, features = rownames(marrow2))
+marrow2 <- CellCycleScoring(marrow2, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+#Warning: The following features are not present in the object: ENSMUSG00000037025, ENSMUSG00000029337, not searching for symbol synonyms
+RidgePlot(marrow2, features = c("ENSMUSG00000051176","ENSMUSG00000029337"), ncol = 2)
+#1   Rex1 ENSMUSG00000051176
+#2  Top2a ENSMUSG00000020914
+#3   Mcm6 ENSMUSG00000026355
+#4  Mki67 ENSMUSG00000031004
+#5  Fgf5  ENSMUSG00000029337
+marrow2 <- RunPCA(marrow2, features = c(s.genes, g2m.genes))
+DimPlot(marrow2)
+write.csv(marrow2@active.ident,"NP_identity.csv")
+# view cell cycle scores and phase assignments
+head(marrow2[[]])
+```
+
+### 7. Genie3
+```{r "Genie3"}
+library(plyr)
+library(dplyr)
+#rm(list = ls())
+dir_save = "D:\\Linlab\\OCT4 induction\\mechanism\\scRNA-seq\\integrate_sc_matrix" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+library("GENIE3")
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+#BiocManager::install("GENIE3")
+
+integrate_matrix_hl<-as.data.frame(read.csv("integrate_matrix_half_life_gene_id.csv"))
+rownames(integrate_matrix_hl)<-integrate_matrix_hl[,1]
+integrate_matrix_hl<-t(integrate_matrix_hl)
+integrate_matrix_hl<-integrate_matrix_hl[-1,]
+regu<-rownames(integrate_matrix_hl)[2:length(rownames(integrate_matrix_hl))]
+
+genie3_results<-GENIE3(
+  integrate_matrix_hl,
+  regulators = regu,
+  targets = "global_deg",
+  treeMethod = "RF",
+  K = "sqrt",
+  nTrees = 1000,
+  nCores = 1,
+  verbose = FALSE
+)
+
+genie3_results2<-GENIE3(
+  integrate_matrix_hl,
+  regulators = NULL,
+  targets = NULL,
+  treeMethod = "RF",
+  K = "sqrt",
+  nTrees = 1000,
+  nCores = 1,
+  verbose = FALSE
+)
+
+#can't do it in the local windows, put it to Linux, chage the nCores to 10.
+linkList<-read.csv("linkList.csv")
+R1<-linkList[,"targetGene"]=="global_deg"
+linkList_R1<-linkList[R1,]
+linkList_R1<-linkList_R1[order(linkList_R1[,"weight"],decreasing=T),]
+write.csv(linkList_R1[c(1:10),],"genie3_top10.csv")
+#R2<-linkList[,"regulatoryGene"]=="global_deg"
+#linkList_R2<-linkList[R2,]
+#linkList_R2<-linkList_R2[order(linkList_R2[,"weight"],decreasing=T),]
+
+corre_list<-read.csv("integrate_matrix_half_life_selected_gene_id.csv")
+corre_list<-t(corre_list)
+colnames(corre_list)<-corre_list[1,]
+corre_list<-corre_list[-1,]
+
+inter_gene<-intersect(rownames(corre_list),linkList_R1[,"regulatoryGene"][1:66])
+
+#inter_gene<-intersect(rownames(corre_list),linkList_R2[,"targetGene"][1:66])
+
+inter_gene_matrix<-corre_list[inter_gene,]
+write.csv(inter_gene_matrix,"genie3_corre_inte_genes.csv")
+```
+
+### 8. Umi and Barcode Dotplot for QC
+```{r "Umi and barcode dotplot for QC"}
+#draw the dotplot of iDrop
+dir_save = "D:\\Linlab\\合作交流\\data_analysis\\hfxcDNA3" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+library(ggplot2)
+library(dplyr)
+library("cowplot")
+library('biomaRt')
+library("curl")
+library(devtools)
+cell_stat<-as.data.frame(read.table("cell_stat.txt",header = TRUE))
+
+cell_stat2<-cell_stat[order(as.numeric(as.character(cell_stat[,"UB"])),decreasing = T),]
+cell_stat<-as.data.frame(cbind(cell_stat2[c(1:50000),],1:50000))
+#cell_stat<-as.data.frame(cbind(cell_stat[c(1:10000),],rownames(cell_stat)))
+colnames(cell_stat)<-c("BARCODE","raw","UB","GN","namesort")
+#cell_stat$BARCODE <- factor(cell_stat$BARCODE, levels = cell_stat$BARCODE[order(cell_stat$UB,decreasing = T)])
+cell_stat$namesort <- factor(cell_stat$namesort, levels = cell_stat$namesort[order(cell_stat$UB,decreasing = T)])
+
+ggplot(cell_stat, aes(x = log10(as.numeric(as.character(namesort))), y = log10(as.numeric(as.character(UB))))) + geom_point()+
+  labs(x = "Cell barcode", y = "log10 (UMI counts)")+
+  theme_bw()+
+  ylim(0,5.5)+
+  xlim(-0.1,5)+
+  theme(
+    text = element_text(size=30),
+    panel.background = element_rect(fill = "transparent",colour = NA), 
+    panel.grid.minor = element_blank(), 
+    axis.text=element_text(color='black'),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=22),
+    axis.text.y = element_text(size=22))
+```
+
+### 9. Calling Cells by DropletUtils
+```{r "Calling cells by DropletUtils"}
+#!/usr/bin/env Rscropt
+suppressMessages({
+  library(ggplot2)
+  library(getopt)
+  library(data.table)
+  library(cowplot)
+  library(DropletUtils)
+  
+})
+args=commandArgs(T)
+sample_name=args[1]
+
+#bc <- fread("./I500_NP36_count_mtx.tsv",header=TRUE)
+bc <- fread(paste("./",sample_name,"_count_mtx.tsv",sep=""),header=TRUE)
+bc_in<-bc[,-1]
+br.out <- barcodeRanks(bc_in,lower = 100)
+
+s1="Step1: finished bR"
+s1
+
+png(file =paste("./calling_cells_",sample_name,".png",collapse=NULL,sep=""))
+plot(br.out$rank,br.out$total,log="xy",xlab="Rank",ylab="Total")
+o <- order(br.out$rank)
+lines(br.out$rank[o],br.out$fitted[o],col="red",lwd=3)
+dev.off()
+
+s2="Step2: finished plotting"
+s2
+
+br_filted<-na.omit(br.out)
+bc_filted_by_fitted<-subset(bc, select=rownames(br_filted))
+bc_filted_by_fitted<-cbind(bc[,1],bc_filted_by_fitted)
+write.table(bc_filted_by_fitted,paste("./",sample_name,"_bc_filted_by_fitted.tsv",sep=""),row.names=F)
+ncol(bc_filted_by_fitted)
+
+s3="Step3: finished filtering"
+s3
+
+cutoff = nrow(subset(bc.out,br.out$total>=metadata(br.out)$inflection))
+cutoff
+
+m = metadata(br.out)$inflection
+m
+
+#write.table(br.out,"./br.out.txt")
+
+dir_save = "D:\\Linlab\\合作交流\\data_analysis\\SEQ210427" ##this is the dir for saving data
+sample_name=""
+setwd(dir_save)  #set the work dir as the direction for saving data
+br<-read.table("br.out.txt")
+png(file =paste("umi_barcode_",sample_name,".png",collapse=NULL))
+plot(br$rank,br$total,log="xy",xlab="Rank",ylab="Total")
+o<- order(br$rank)
+lines(br$rank[o],br$fitted[o],col="red",lwd=3)
+dev.off()
+##selected cells
+br_filted<-na.omit(br)
+bc_filted<-subset(bc, select=rownames(br_filted))
+```
+
+Calling Cells by Threshold
+```{r}
+dir_save = "D:\\Linlab\\合作交流\\data_analysis\\SEQ210526" ##this is the dir for saving data
+sample_name = "4w"
+setwd(dir_save)  #set the work dir as the direction for saving data
+library(ggplot2)
+library(dplyr)
+library("cowplot")
+library('biomaRt')
+library("curl")
+library(devtools)
+#cell_stat<-as.data.frame(read.table("WT_NP0a_cell_stat.txt",header = TRUE))
+cell_stat <- as.data.frame(read.table(paste(dir_save,"\\",sample_name,"_cell_stat",".txt",sep=""),header = TRUE))
+
+#set the threshold as 6000-50000
+cell_stat_F1<-cell_stat[cell_stat[,"UB"]<50000,]
+cell_stat_F2<-cell_stat_F1[cell_stat_F1[,"UB"]>6000,]
+
+cells_filted<-cell_stat_F2[,"BARCODE"]
+
+#read the matrix file:
+cell_matx <- as.data.frame(read.table(paste(dir_save,"\\",sample_name,"count_mtx",".tsv",sep=""),header = TRUE))
+cell_matx_filted<-subset(cell_matx,select=cells_filted)
+```
+
+### 10. Identify the Outlier by The Neighbors
+```{r}
+dir_save = "D:\\Linlab\\合作交流\\data_analysis\\SEQ210427\\calling_cells\\WT_NP0b_bc_filted_by_fitted.tsv" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+sc_data<-as.data.frame(read.table("WT_NP0b_bc_filted_by_fitted.tsv",header=TRUE,row.names = 1))
+
+###Calculate the top 500 genes by rowMeans
+sc_rm<-rowMeans(sc_data)
+sc_rmmt<-as.data.frame(cbind(sc_rm,rownames(sc_data)))
+sc_rmmt2<-sc_rmmt[order(sc_rmmt[,1],decreasing=T),]
+
+###extract the top 500 genes
+sc_data_top500<-sc_data[rownames(sc_rmmt2[c(1:500),]),]
+
+#change it to Spearman correlation if it's not
+sc_data_top500_corr<-cor(sc_data_top500,method = "spearman")
+sc_data_top500_corr[which(sc_data_top500_corr==1)]<-0
+
+###identify the outlier by the nearest neighbor (less than 0.6 correlation)
+sc_data_top500_corr_max<-apply(sc_data_top500_corr, 1, max)
+sc_data_outlier<-sc_data_top500_corr_max[sc_data_top500_corr_max<0.6]
+length(sc_data_outlier)
+name_outlier<-names(sc_data_outlier)
+remain_cells<-setdiff(colnames(sc_data),name_outlier)
+
+###get the final filtered matrix
+sc_data_filtered<-subset(sc_data, select=remain_cells)
+
+######z-score
+dir_save = "D:\\Linlab\\合作交流\\data_analysis\\SEQ210427\\calling_cells\\WT_NP0b_bc_filted_by_fitted.tsv" ##this is the dir for saving data
+setwd(dir_save)  #set the work dir as the direction for saving data
+sc_data<-as.data.frame(read.table("WT_NP0b_bc_filted_by_fitted.tsv",header=TRUE,row.names = 1))
+
+###Calculate the top 500 genes by rowMeans
+sc_rm<-rowMeans(sc_data)
+sc_rmmt<-as.data.frame(cbind(sc_rm,rownames(sc_data)))
+sc_rmmt2<-sc_rmmt[order(sc_rmmt[,1],decreasing=T),]
+
+###extract the top 500 genes
+sc_data_top500<-sc_data[rownames(sc_rmmt2[c(1:500),]),]
+
+###calculate the z-score(for unbiased pearson-correlation calculation)
+sc_data_scaled<-apply(sc_data_top500, 1, scale)
+rownames(sc_data_scaled)<-colnames(sc_data_top500)
+sc_data_top500_scaled<-t(sc_data_scaled)
+
+#change it to Spearman/Pearson correlation if it's not
+sc_data_top500_corr<-cor(sc_data_top500_scaled,method = "pearson")
+sc_data_top500_corr[which(sc_data_top500_corr==1)]<-0
+
+###identify the outlier by the nearest neighbor (less than 0.6 correlation)
+sc_data_top500_corr_max<-apply(sc_data_top500_corr, 1, max)
+sc_data_outlier<-sc_data_top500_corr_max[sc_data_top500_corr_max<0.6]
+length(sc_data_outlier)
+name_outlier<-names(sc_data_outlier)
+remain_cells<-setdiff(colnames(sc_data),name_outlier)
+
+###get the final filtered matrix
+sc_data_filtered<-subset(sc_data, select=remain_cells)
+```
+

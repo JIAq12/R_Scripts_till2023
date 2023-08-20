@@ -1,0 +1,741 @@
+D:\Linlab\DuPengLAB\hESC_hEpiLC\geneID_exp_dot_plot.R
+D:\Linlab\DuPengLAB\human_mouse_embryonic_early\bar_pabpc1.R
+D:\Linlab\metastasis\cell_cycle.R
+D:\Linlab\metastasis\EMT_genes.R
+D:\Linlab\metastasis\fgsea.R
+D:\Linlab\metastasis\metabolism.R
+D:\Linlab\metastasis\relative_exp_cluster_heatmap.R
+D:\Linlab\metastasis\singular.R
+D:\Linlab\metastasis\cellfie\entrzID.R
+D:\Linlab\metastasis\compare with primary tumor metastasis\data1\heatmap_metastatic_signature.R
+D:\Linlab\metastasis\compare with primary tumor metastasis\data1\heatmap_metastatic_signature_71.R
+D:\Linlab\metastasis\cytoTRACE_P1P2\cytoTRACE.R
+D:\Linlab\metastasis\cytoTRACE_P1P2\LB_QC.R
+D:\Linlab\metastasis\cytoTRACE_P1_cellLINE\cell_cycle_P1P2.R
+D:\Linlab\metastasis\database\CTC_datasets\CTC&primary\seurate3_inte_P1.R
+D:\Linlab\metastasis\database\CTC_datasets\CTC&primary\seurate3_inte_P2.R
+D:\Linlab\metastasis\database\CTC_datasets\CTC&primary\GSE162726_Processed_Data.txt\seurate3_inte_P1.R
+D:\Linlab\metastasis\database\CTC_datasets\CTC&primary\GSE162726_Processed_Data.txt\seurate3_inte_P2.R
+D:\Linlab\metastasis\database\CTC_datasets\only_CTC1\sample_ID_extract.R
+D:\Linlab\metastasis\database\CTC_datasets\only_CTC1\seurate3_inte.R
+D:\Linlab\metastasis\EMT\mRNAsi_EMT.R
+D:\Linlab\metastasis\EMT\mRNAsi_EMT_71.R
+D:\Linlab\metastasis\mRNAsi\mRNAsi_ESTIMATE_purity.R
+D:\Linlab\metastasis\P2debug\entrzID.R
+D:\Linlab\metastasis\P2debug\LB_QC.R
+D:\Linlab\metastasis\P2debug\LB_QC0416.R
+D:\Linlab\metastasis\SCENIC\SCENIC.R
+D:\Linlab\metastasis\Seurate3\seurate3_inte.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\install_requiredPackages.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\utils.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\1-ReadData\readData_head_neck.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\1-ReadData\readData_melanoma.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\1-ReadData\readData_my_Data.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\2-Imputation\impute_tpm.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\3-Normalization\normalization.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\4-Clustering\inter_tumor_distance.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\4-Clustering\metabolic_landscape.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\4-Clustering\metabolic_landscape_mydata.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\5-PathwayActivity\scRNA_pathway_activity.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\5-PathwayActivity\TCGA_pathway_activity.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\6-PathwayHeterogeneity\GeneSignature-of-Low_OXPHOS_Glycolysis_Hypoxia.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\6-PathwayHeterogeneity\intra_malignant_heterogeneity.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\6-PathwayHeterogeneity\intra_non-malignant_heterogeneity.R.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\6-PathwayHeterogeneity\OXPHOS_Glycolysis_Hypoxia_Correlation_plot-CCLE.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\6-PathwayHeterogeneity\OXPHOS_Glycolysis_Hypoxia_Correlation_plot.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\6-PathwayHeterogeneity\runGSEA_preRank.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\7-MetabolicFeatures\non-malignant_subtype.R
+D:\Linlab\metastasis\Single-Cell-Metabolic-Landscape-master\Single-Cell-Metabolic-Landscape-master\7-MetabolicFeatures\runGSEA.R
+D:\Linlab\metastasis\ssGSEA\GSVA.R
+D:\Linlab\metastasis\ssGSEA\GSVA_example.R
+D:\Linlab\Monthly report\20200224\degradation_rate.R
+D:\Linlab\Monthly report\20200224\expression_three_module.R
+D:\Linlab\Monthly report\20200224\halflife.R
+D:\Linlab\Monthly report\20200224\half_life_h.R
+D:\Linlab\Monthly report\20200224\responsiveness.R
+D:\Linlab\Monthly report\20200224\single_cell_CV_data.R
+D:\Linlab\Monthly report\20221124_答辩\intron_genes\intron_containing_genes.R
+D:\Linlab\OCT4 induction\2i0_debug\halflife_check.R
+D:\Linlab\OCT4 induction\ABL2021-03011-L polyA-seq\polyA-seq\Supplements\Sup5_polya_A_length\median\heatmap_du_list.R
+D:\Linlab\OCT4 induction\analysis0412\cluster_box_plot.R
+D:\Linlab\OCT4 induction\analysis0412\Different_clusters.R
+D:\Linlab\OCT4 induction\analysis0412\DMZ_failed_boxplot.R
+D:\Linlab\OCT4 induction\analysis0412\dotplot_12h_onset_of diff.R
+D:\Linlab\OCT4 induction\analysis0412\heatmap_after_perturbation.R
+D:\Linlab\OCT4 induction\analysis0412\heatmap_WT_EO.R
+D:\Linlab\OCT4 induction\analysis0412\Same_condition_similar_mean_region.R
+D:\Linlab\OCT4 induction\analysis0412\TR_DR_cluster_CV_logTRHL_CV_MEAN.R
+D:\Linlab\OCT4 induction\analysis0412\Two_condition_similar_mean.R
+D:\Linlab\OCT4 induction\analysis0412\Two_condition_TRDR_cluster.R
+D:\Linlab\OCT4 induction\analysis0413_debug\SEQ200309\geneID_deg_picture.R
+D:\Linlab\OCT4 induction\bivalent exp\bivalent_exp.R
+D:\Linlab\OCT4 induction\bivalent exp\bivalent_gene_TID.R
+D:\Linlab\OCT4 induction\bivalent exp\target.R
+D:\Linlab\OCT4 induction\cytoTRACE\cytoTRACE.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\iPSC_diff_endothelial\GSE84385_EC_Model_Human_May2015_counts.gct\gene.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\liver differentiation\gene.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\mESC_diff\gene.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\mESC_EB\GSE154572_counts_bulk_rna_seq_endoderm.txt\gene.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\mESC_EB\GSE154572_counts_bulk_rna_seq_mesoderm.txt\gene.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\mESC_mEpiLC\cpm.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\mESC_mEpiLC\gene.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\mESC_neuronal differentiation\gene.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\reprogramming1\GSE161057_Raw_gene_counts_matrix.csv\RNA_metabolism_related_genes_heatmap_mouse.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\reprogramming2\GSE86653_RNAseqMEF_iPS_samples_FPKMs.xls\RNA_metabolism_related_genes_heatmap_mouse.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\reprogramming3\RNA_metabolism_related_genes_heatmap_mouse.R
+D:\Linlab\OCT4 induction\database_datasets\conserved in cell state transition\reprogramming4\GSE70022_FPKMs.iPS.txt\RNA_metabolism_related_genes_heatmap_mouse.R
+D:\Linlab\OCT4 induction\database_datasets\mESC_mEpiSC\data_1\counts\data_integration_01_0416.R
+D:\Linlab\OCT4 induction\database_datasets\mESC_mEpiSC\data_2\data_integration.R
+D:\Linlab\OCT4 induction\database_datasets\mESC_mEpiSC\data_3\integrate_half_life.R
+D:\Linlab\OCT4 induction\database_datasets\mESC_mEpiSC\data_4\integrate_half_life.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210102\Tut47_cell_hg\RNA_metabolism_related_genes_heatmap_human.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210102\Tut47_KD_mm\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210131\hESC_naive_primed1\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210131\hESC_naive_primed2\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\RNA_heatmap_Gata6a_kd.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\RNA_heatmap_Mbd3f_kd.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\RNA_heatmap_WT.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\RNA_heatmap_WT1.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\RNA_heatmap_WT2.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\RNA_metabolism_related_genes_heatmap_mouse.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\intronic_1\density_plot_dot_plot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\intronic_1\mef_1\density_plot_dot_plot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\data_210322\iPSC_1\intronic_1\mef_2\density_plot_dot_plot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\mouse_human_development\RNA_metabolism_related_genes_heatmap_human.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\mouse_human_development\RNA_metabolism_related_genes_heatmap_mouse.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\INSPEcT.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\2i_serum\E14.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\2i_serum\TNGA.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2iVitC_EpiLC_transfer\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2iVitC_EpiLC_transfer\test.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2i_diff\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2i_Epi\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2i_EpiLC_transfer\D4_dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2i_EpiLC_transfer\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2i_EpiLC_transfer\violin_density.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2i_serum3\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\2i_serum_LG1\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\all_2i\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\mettl3_kd\nascent\dot_plot_all.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\serum_2i\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\serum_2i_transfer\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\serum_2i_transfer2\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0530\stem_cell\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_EpiSC_PGCLC.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_Smarcad1_KD.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_DNMT1KO\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_DNMT1KO\dotplot_DNMT1_KO.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_DNMT1KO\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_DNMT1KO\ESC_DNMT1KO_rep\violin_and_density.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_DNMT1KO\ESC_DNMT1KO_rep\violin_and_density_total_mRNA.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_EpiSC_PGCLC\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_EpiSC_PGCLC\dotplot_V2_density.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_EpiSC_PGCLC\violin_density.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_exosome_1\density_plot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_exosome_1\density_plot_2i_EpiLC_transfer.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_exosome_1\density_plot_ESC_2i_diff.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_exosome_1\density_plot_ESC_DNMT1KO.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_exosome_1\density_plot_ESC_EpiSC_PGCLC.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_exosome_1\density_plot_serum_2i_transfer.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_exosome_1\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_Smarcad1_KD\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_SPT_KO\density_plot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_SPT_KO\density_plot_13D.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_SPT_KO\density_plot_mESC.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_SPT_KO\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_TKO\density_plot_mESC.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_TKO\ESC_TKO.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\ESC_TKO\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0712_ESC\EtOH_1\density_plot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_M24_190702.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_M24_190709.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_Msn24_0910.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_WT_190430.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_M24_190702\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_M24_190702\dotplot_DNMT1_KO.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_M24_190702\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_M24_190709\density_plot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_M24_190709\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_Msn24_0910\density_plot.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0715_yeast\yeast_stress_WT_190430\density_violin.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_Kdm3b_KO.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO2.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO3.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO4.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO5.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_Zfp281_KO.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO2\density_plot_mESC.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO2\ESC_TKO.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO2\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO3\density_D0.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO3\density_plot_mESC_TKO3.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0802_ESC\ESC_TKO4\density_plot_mESC_TKO4.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0824\ESC_TKO6.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_0824\ESC_TKO66.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_1011\density_plot_mESC_TKO4.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_1011\mouse_human_development\human_dev\dot_plot_d0_d7.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_1011\mouse_human_development\human_dev\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_1011\mouse_human_development\mouse_dev\dot_plot_d0_d7.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_1011\mouse_human_development\mouse_dev\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_1011\mouse_human_ND\density_plot_mESC_TKO4.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_1011\mouse_human_ND\human_ND\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\DATA_1011\mouse_human_ND\mouse_ND\violin_and_dencity.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\L0\L0_nascent_intron.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\L0&2i0\dot_plot_all.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\L0&2i0\dot_plot_microarray.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\L0&2i0\dot_plot_slamseq.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\m6A\m6A.R
+D:\Linlab\OCT4 induction\database_datasets\RNA-seq_INSPECT\test_inspect\neural_diff\dotplot.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_early_embryonics_mouse\box_plot - 副本.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_early_embryonics_mouse\box_plot.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_early_embryonics_mouse\Pabpc1.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_early_embryonics_mouse\pca_220219.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220508\box_plot_02.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220508\cell_DR_median_01.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220508\marker_list_03_supp.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220508\NP_box_plot_05.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220508\NP_identity_03.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220508\Pabpc1_box_plot_06.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220508\seurat_tsne_04.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220706\integrate_DR_dotPlot_filter_by_counts_mean_220323_2.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220706\integrate_DR_dotPlot_filter_by_counts_median_220323_2.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220706\NP_box_plot_05.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220706\sum_DR_01.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220719\00_GOset_pre_post2_top10_forPIE.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220719\01_horizental_bar_plot.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220719\01_horizental_bar_plot_norRNA.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220719\02_tsne_seurat.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220719\03_clustering_dot_plot.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_integrate_analysis_220719\failed_unfilter0.4\220720_sum_DR_filterHgene.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\dot_plot.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\geneID.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\NP_identity.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\seurat_cell_cycle.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\filter_by_threds_0\cellHLfc_03.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\filter_by_threds_0\cellHLfc_unfiltered_03.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\filter_by_threds_0\dot_plot.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\filter_by_threds_0\dot_plot_DR_median.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\filter_by_threds_0\gene_bar.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\filter_by_threds_0\half_life_calculation_filterBY5_0418.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_2\filter_by_threds_0\single_cell_dot_plot_failed.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_3\dot_plot_DR_median.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_pre_post_mouse_3\NP_identity.R
+D:\Linlab\OCT4 induction\database_datasets\sc_datasets_scNT_220828\box_plot_selected_final1_211020.R
+D:\Linlab\OCT4 induction\database_datasets\tissue_intron_exon\Human20Tissues.stability.filtered.mx.txt\221115_corr_HL_Pabpc1_cor.R
+D:\Linlab\OCT4 induction\database_datasets\tissue_intron_exon\Human20Tissues.stability.filtered.mx.txt\dot_plot.R
+D:\Linlab\OCT4 induction\database_datasets\tissue_intron_exon\Human20Tissues.stability.filtered.mx.txt\human_symbol.R
+D:\Linlab\OCT4 induction\database_datasets\uridylation_tail_length\uridy_1\density_plot.R
+D:\Linlab\OCT4 induction\database_datasets\uridylation_tail_length\uridy_1\density_plot_TF.R
+D:\Linlab\OCT4 induction\database_datasets\uridylation_tail_length\uridy_1\geneID_exp_dot_plot_onlyhl.R
+D:\Linlab\OCT4 induction\data_validation\compare_to_other_naive_primed\2i_Epi\gene_cpm_dot_plot.R
+D:\Linlab\OCT4 induction\data_validation\compare_to_other_naive_primed\ESC_EpiSC_PGCLC\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\data_validation\compare_to_other_naive_primed\raw_matrix_SEQ0827_and marker_gene_expression\du_peng_marker_heatmap_plot.R
+D:\Linlab\OCT4 induction\data_validation\compare_to_other_naive_primed\raw_matrix_SEQ0827_and marker_gene_expression\geneID_exp_bar_plot.R
+D:\Linlab\OCT4 induction\data_validation\compare_to_other_naive_primed\raw_matrix_SEQ0827_and marker_gene_expression\total_RNA_dot_plot,R.R
+D:\Linlab\OCT4 induction\data_validation\slamseq_hl\integrate_dot_density_plot.R
+D:\Linlab\OCT4 induction\data_validation\slamseq_hl\test1.R
+D:\Linlab\OCT4 induction\DMZ0507\heatmap.R
+D:\Linlab\OCT4 induction\figure_redraw\gene_expression\all_heatmap_Du_list.R
+D:\Linlab\OCT4 induction\figure_redraw\gene_expression\DEseq_Norm.R
+D:\Linlab\OCT4 induction\figure_redraw\previous_data\results_190812\results_0225_filted.R
+D:\Linlab\OCT4 induction\figure_redraw\previous_data\results_191106\all_matrix_20211121.R
+D:\Linlab\OCT4 induction\figure_redraw\previous_data\results_191106\results_0225_filted.R
+D:\Linlab\OCT4 induction\figure_redraw\previous_data\results_191106\results_191106_filted.R
+D:\Linlab\OCT4 induction\figure_redraw\previous_data\results_200824\NP.R
+D:\Linlab\OCT4 induction\figure_redraw\previous_data\results_201106\2iL\2iL.R
+D:\Linlab\OCT4 induction\figure_redraw\previous_data\results_201106\L2i\L2i.R
+D:\Linlab\OCT4 induction\Function\reanalysis_integrationALLEO_220908\220916_bin_bar_plot.R
+D:\Linlab\OCT4 induction\Function\reanalysis_integrationALLEO_220908\debug_220128_0716SET_heatmap.R
+D:\Linlab\OCT4 induction\Function\reanalysis_integrationALLEO_220908\debug_220909_0716SET.R
+D:\Linlab\OCT4 induction\Function\reanalysis_integrationALLEO_220908\debug_220909_0716SET_del9.R
+D:\Linlab\OCT4 induction\Function\reanalysis_integrationALLEO_220908\dot_plot_all_0908 - 副本.R
+D:\Linlab\OCT4 induction\Function\reanalysis_integrationALLEO_220908\dot_plot_all_0908.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\DR_exp_0817\exp_DR_related_220817.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\exp_marker\heatmap.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\exp_marker\heatmap_marker_gene_filtered.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\exp_marker\heatmap_same_group.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\exp_marker\heatmap_same_group_norm_all.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\exp_marker\marker_line_plot_220516.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\exp_marker\marker_line_plot_220516_subH0.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\exp_marker\SOM_clustering\som_cluster_220612_fc_zscore_6_GOOD.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\gs_cleanDATA\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\gs_cleanDATA\dot_edge_density_si.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\gs_cleanDATA_220215\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\matrix\bar_pabpc1_useless.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\matrix\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\pca\pca_220210.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\pca\pca_220219.R
+D:\Linlab\OCT4 induction\Function\SEQ220117_TNP\pca_marker_0817\pca_220817.R
+D:\Linlab\OCT4 induction\Function\SEQ220128_EOsiEO_failed\efficiency\corr_filtered.R
+D:\Linlab\OCT4 induction\Function\SEQ220128_EOsiEO_failed\efficiency\corr_unfiltered.R
+D:\Linlab\OCT4 induction\Function\SEQ220128_EOsiEO_failed\efficiency\heatmap_filtered.R
+D:\Linlab\OCT4 induction\Function\SEQ220128_EOsiEO_failed\gs_cleanDATA\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220128_EOsiEO_failed\gs_cleanDATA\EOsiEO_unfiltered.R
+D:\Linlab\OCT4 induction\Function\SEQ220128_EOsiEO_failed\matrix\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220128_EOsiEO_failed\matrix\geneID_exp_dot_plot_delete_LARS.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\corr\220910_all_corr.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\corr\220910_bin_sparse.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\corr\corr.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\corr\N1bin_bar_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\corr\results_heatmap.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\counts\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\exp_marker\heatmap_marker_gene_filtered.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\FM\som_FM.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\gs\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220221_T36NP\nascent_marker\nascent_marker.R
+D:\Linlab\OCT4 induction\Function\SEQ220223_EOsiEO\counts\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220223_EOsiEO\gs\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220223_LNP_NP\dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220223_LNP_NP\corr\corr.R
+D:\Linlab\OCT4 induction\Function\SEQ220223_LNP_NP\exp_marker\heatmap_marker_gene_filtered.R
+D:\Linlab\OCT4 induction\Function\SEQ220223_LNP_NP\pca\pca_220210.R
+D:\Linlab\OCT4 induction\Function\SEQ220223_LNP_NP\pca\pca_220210_marker.R
+D:\Linlab\OCT4 induction\Function\SEQ220223_LNP_NP\total\total_MAP_geneID.R
+D:\Linlab\OCT4 induction\Function\SEQ220302_T24NPfailed\nascent\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\Function\SEQ220302_T24NPfailed\nascent\box_plot_dot_plot_2.R
+D:\Linlab\OCT4 induction\Function\SEQ220302_T24NPfailed\total\pca_220219_cpm.R
+D:\Linlab\OCT4 induction\Function\SEQ220302_T24NPfailed\total\pca_220219_tpm.R
+D:\Linlab\OCT4 induction\Function\SEQ220302_T24NPfailed\total\rpkm_MAP_geneID.R
+D:\Linlab\OCT4 induction\Function\SEQ220302_T24NPfailed\total\total_MAP_geneID.R
+D:\Linlab\OCT4 induction\Function\SEQ220302_T24NPfailed\total\tpm_MAP_geneID.R
+D:\Linlab\OCT4 induction\Function\SEQ220302_T24NPfailed\total\tpm_rpkm.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\corr.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\corr_02.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\dot_plot_01.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\dot_plot_debug.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\dot_plot_debug_2.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\nascent_RNA.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\total_RNA.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\counts\cpm.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\counts\tpm_rpkm.R
+D:\Linlab\OCT4 induction\Function\SEQ220618_EO2iPri\reseq220712\dot_plot_debug_2.R
+D:\Linlab\OCT4 induction\Function\SEQ220716_EOPD\corr_density_0128_now.R
+D:\Linlab\OCT4 induction\Function\SEQ220716_EOPD\dot_plot_01.R
+D:\Linlab\OCT4 induction\Function\SEQ220716_EOPD\dot_plot_02_inte220618.R
+D:\Linlab\OCT4 induction\Function\SEQ220716_EOPD\dot_plot_03_inte220223.R
+D:\Linlab\OCT4 induction\Function\SEQ220716_EOPD\dot_plot_04_inte220128.R
+D:\Linlab\OCT4 induction\generalization\scRNA-seq_ana.R
+D:\Linlab\OCT4 induction\INSPEcT\INSPEcT.R
+D:\Linlab\OCT4 induction\mechanism\ARE_related\AREsite.R
+D:\Linlab\OCT4 induction\mechanism\classifier_211123\figures_filtered_by_16000_and_genes\calculation_HL_filterGENES_211124_1.R
+D:\Linlab\OCT4 induction\mechanism\classifier_211123\figures_filtered_by_16000_and_genes\cellHLfc_for_Naive1_Primed1_2.R.R
+D:\Linlab\OCT4 induction\mechanism\classifier_211123\figures_filtered_by_16000_and_genes\classifier_final_3.R
+D:\Linlab\OCT4 induction\mechanism\classifier_211123\figures_filtered_by_16000_and_genes\classifier_glm_4.R
+D:\Linlab\OCT4 induction\mechanism\classifier_211123\GO_term\integration.R
+D:\Linlab\OCT4 induction\mechanism\classifier_211123\yms\cytoTRACE.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\220707_sum_intron_exon_DR.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\clustering_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\counts_all_gather.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\cpm_mat_16w_16.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\gene_symbol.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\NP_identity.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\NP_identity_1w_6w.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\NP_identity_1_6.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\seurat_tsne_146w.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\seurat_tsne_16w.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\seurat_tsne_all.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\clustering_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\clustering_dot_plot_DR.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\integrate.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\pie_chart_top10.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\reactome_RNA_metabolism.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\seurat_tsne_26w.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\lasso_reactome\heatmap_expression.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\lasso_reactome\integrate.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\lasso_reactome\reactome_RNA_metabolism.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220705_sc02\lasso\lasso_reactome\reactome_rRNA_processing_nCoding.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220711_sc01_failed\DR_median.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220711_sc01_failed\NP_identity.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220724_lif2i\01_integrate_lif2i_26w_goPvalue.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220724_lif2i\02_seurat_tsne_lif2i.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220724_lif2i\03_clustering_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220724_lif2i\04_Venn_plot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220724_lif2i\04_Venn_plot_220904_norRNAetc.R
+D:\Linlab\OCT4 induction\mechanism\classifier_220724_lif2i\05_cpm_mat.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\01_Venn_plot\inte_Venn.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\02_heatmap\heatmap_basedON_LYX.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\02_heatmap\heatmap_basedON_LYX_no6h.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\02_heatmap\rscript_liuyuxi_220804.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\03_heatmap_path\01reactome_RNA_metabolism.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\03_heatmap_path\02heatmap_seperated_group.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\03_heatmap_path\02heatmap_seperated_group_no6h.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\03_heatmap_path\03heatmap_seperate_save.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\03_heatmap_path\04lineplot_seperate_save.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\anova_1115_YMS\04_clipdb_R\03heatmap_seperate_save.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\pie_char_P_log10.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat\03_clustering_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\03_clustering_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\Seurat_integrate.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\cc_2019_final\03_clustering_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\cc_2019_final\04_230130_density_debug.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\cc_2019_final\seurat2i_F48_inte.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\cc_2019_final\seurat_2iF48.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\cc_2019_final\pabpc1_exp\03_clustering_dot_plot_exp.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\cc_2019_final\pabpc1_exp\04_binBARplot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230111\cc_2019_final\pabpc1_exp\05_dot_edge_density_220313_compare_three.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\lasso_1113union_allGENE\seurat230114_P\03_clustering_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\classifier_rescSEQ_220823\P_PD_debug\P_PD_debug.R
+D:\Linlab\OCT4 induction\mechanism\DEG\差异表达基因\edg2_zsy.R
+D:\Linlab\OCT4 induction\mechanism\exosome_expression\box_plot.R
+D:\Linlab\OCT4 induction\mechanism\exosome_expression\deg_modi_genes.R
+D:\Linlab\OCT4 induction\mechanism\exosome_expression\fc_analysis.R
+D:\Linlab\OCT4 induction\mechanism\m6A\m6A_genes.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\2i_Epi\bar_plot_certain_genes.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\2i_Epi\bar_plot_fc.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\2i_EpiLC_transfer\bar_plot_certain_gene.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\2i_EpiLC_transfer\bar_plot_fc.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\2i_serum3\bar_plot_certain_genes.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\2i_serum3\bar_plot_fc.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\2i_serum_LG1\bar_plot_certain_genes.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\2i_serum_LG1\bar_plot_fc.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\ESC_SPT_KO\barplot_certain_genes.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\ESC_SPT_KO\barplot_certain_genes_geneID.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\ESC_SPT_KO\violin_and_dencity.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\serum_2i\bar_plot_certain_genes.R
+D:\Linlab\OCT4 induction\mechanism\other_datasets\DATA_0530\serum_2i\bar_plot_fc.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\ana220314_inte_two\box_plot_dot_plot_filtered.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\ana220511_inte_three\230318_dot_plot_colorChanged.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\ana220511_inte_three\box_plot_dot_plot_filtered.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\ana220511_inte_three\FC_2iL_wt_D_si_lineLIF.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\ana220511_inte_three\genes_modulated_55_97.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\ana220511_inte_three\tri_three.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\ana220511_inte_three\pabpc1\bar_pabpc1.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\ana220511_inte_three\pabpc1\bar_tut4.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\DEG\deseq2.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\DEG\edgeR_2i.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\DEG\edgeR_2i_pri.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\trimmed_gs\dot_edge_density_si.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\trimmed_gs\dot_edge_density_T18.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\trimmed_matrix\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_gs\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_gs\dot_edge_density.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_gs\dot_edge_density_220313_compare_three.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_gs\dot_edge_density_si.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_gs\dot_edge_density_T18.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_gs\heatmap_all.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_gs\RBPscore_log2fcMAP.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_matrix\bar_pabpc1.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_matrix\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211119\untrimmed_matrix\NP_marker\marker_plot.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211205\ana220307\box_plot_dot_plot_filtered.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211205\ana220307\dot_edge_density_220313_compare_three.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211205\trimmed_gs\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211205\trimmed_gs\box_plot_dot_plot_filtered.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211205\trimmed_gs\dot_edge_density_si.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211205\trimmed_matrix\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211205\trimmed_matrix\geneID_exp_dot_plot_filtered.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ211205\trimmed_matrix\TNP_NP\heatmap.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep1\counts\bar_pabpc1.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep1\counts\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep1\gs\box_plot_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep1\gs\dot_edge_density.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep1\gs\results_alpha_beta.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep1\gs\TNPsiNP.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep1\intron\intron_nascent_correlation.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep1\pabpc1_bar\pabpc1_bar.R
+D:\Linlab\OCT4 induction\mechanism\perturbation_exp_0910\SEQ220505_TNPsiNPrep2\geneID_exp_dot_plot.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0916\lyx1117\length_allTadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0916\lyx1117\length_distribution.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0916\lyx1117\Taddition_calculation.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0930-2\ana_211121\Alength.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0930-2\ana_211122\Alength.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0930-2\ana_211122\length_allTadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0930-2\ana_211127\Alength.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0930-2\ana_211127\length_allTadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0930-2\ana_211127\allUstyle\bar.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0930-2\ana_211127\last3\bar.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-0930-2\lyx1120QC\Alength.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-220214\results\Alength.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-220214\results\last3\dot.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-220214\results\last3\dot_pos1pos2_inte.R
+D:\Linlab\OCT4 induction\mechanism\PIPA_seq\PIPA-220214\results\last3\dot_pos1pos2_inte_final.R
+D:\Linlab\OCT4 induction\mechanism\polyA length\polyA_length.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\length_distribution.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\length_distribution_temp.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\Taddition_calculation.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_analysis\allUstyle\bar.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_analysis\last3\bar.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_analysis\length_distribution\length_allTadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_analysis\length_distribution\length_last3A_Tadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_analysis\less30nt_last3\bar.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\allUstyle\bar.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\allUstyle\bar_less30nt.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\all_matrix_integrate.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\all_plot.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\data_all_Alenth_T_genes.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\genes_half_life_byhalf.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\genes_last6Tadd_Alength.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\half_life_ESC_EpiLC.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\length_last3A_Tadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\length_last6A_Tadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\poly(A)_length_distribution_by_genes_average.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\genes_last6_info\Uridylated_frequency_ESC_EpiLC_marker.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\last3\bar.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\length_U_distribution\length_allTadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\length_U_distribution\length_last3A_Tadd_distribution.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\length_U_distribution\length_last3A_Tadd_distribution_oligoU.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\seperate genes\du_list_heatmap.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\seperate genes\HL_0.5_genes.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\seperate genes\HL_ESC.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\mapped_reads_rmdup\seperate genes\poly(A)_length_distribution_by_genes_average.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\raw_reads_analysis\allU_style\bar.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\raw_reads_analysis\last3\bar.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\raw_reads_analysis\length_distribution\length_distribution.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\raw_reads_analysis\less30nt_3Taddition\calculate.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\raw_reads_analysis\less30nt_allUstyle\Bar_plot.R
+D:\Linlab\OCT4 induction\mechanism\poly_A_seq_ABLife_0811\sample\length.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\scRNA.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\cell_cycle\old_list_new_list.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\cell_cycle_exp_heatmap.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\genie3.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\genie3_corre_intersect.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\genie3_corre_intersect_selected_cell_cycle.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\integrated_correlation.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\integrated_correlation2.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\integrated_correlation3.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\RNA_metabolism_related_corre.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\Seurat_integrate.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\bulk_results\exp_2i_EpiLC_transfer.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\bulk_results\exp_2i_serum.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\bulk_results\exp_2i_serum_LG1.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\bulk_results\exp_ESC_SPT_KO.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\bulk_results\exp_naive_Epi.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\integrate_sc_matrix\bulk_results\SEQ1104_bulk_NP.R
+D:\Linlab\OCT4 induction\mechanism\scRNA-seq\IRF\test\Counts\scRNA.R
+D:\Linlab\OCT4 induction\mechanism\TET_related\translation\density_plot_S2_TKD.R
+D:\Linlab\OCT4 induction\mechanism\TET_related\translation\dotplot.R
+D:\Linlab\OCT4 induction\mechanism\transcript_length\3UTR_length.R
+D:\Linlab\OCT4 induction\mechanism\transcript_length\5UTR_length.R
+D:\Linlab\OCT4 induction\mechanism\transcript_length\intron_length.R
+D:\Linlab\OCT4 induction\mechanism\transcript_length\polyA_length.R
+D:\Linlab\OCT4 induction\mechanism\transcript_length\transcript_length.R
+D:\Linlab\OCT4 induction\mechanism\verification exps\qPCR\intronic\inte.R
+D:\Linlab\OCT4 induction\mechanism\verification_PAT_oligoU\qP_210113.R
+D:\Linlab\OCT4 induction\mechanism\verification_PAT_oligoU\qP_210113_2.R
+D:\Linlab\OCT4 induction\mechanism\verification_PAT_oligoU\qP_210116.R
+D:\Linlab\OCT4 induction\metabolic pathway\metabolism.R
+D:\Linlab\OCT4 induction\N2000003_WJQ_80-413289436\nextflex\microRNA_Venn.R
+D:\Linlab\OCT4 induction\N2000003_WJQ_80-413289436\nextflex\target_miR-182.R
+D:\Linlab\OCT4 induction\raw_data_analyzed_200312\GeneID.R
+D:\Linlab\OCT4 induction\raw_data_analyzed_200312\geneID_mapping_total.R
+D:\Linlab\OCT4 induction\raw_data_analyzed_200312\OCT4_target_gene.R
+D:\Linlab\OCT4 induction\SEQ210722_annuo\Fcounts\all_txt\correlation_heatmap.R
+D:\Linlab\OCT4 induction\SEQ210722_annuo\Fcounts\all_txt\heatmap_all_list_non_filtered.R
+D:\Linlab\OCT4 induction\SEQ210722_annuo\Fcounts\all_txt\heatmap_du_list.R
+D:\Linlab\OCT4 induction\SEQ210722_annuo\Fcounts\all_txt\pca_220219.R
+D:\Linlab\OCT4 induction\SEQ210722_annuo\grandslam\NP_INP.R
+D:\Linlab\OCT4 induction\SEQ210722_annuo\slamdunk\INP_NP.R
+D:\Linlab\OCT4 induction\Seurat3\seurate3.R
+D:\Linlab\OCT4 induction\TR and total RNA\SEQ220217\nascent\pre_ana_0319.R
+D:\Linlab\OCT4 induction\TR and total RNA\SEQ220217\per_gene_global_ana220403\box_plot.R
+D:\Linlab\OCT4 induction\TR and total RNA\SEQ220217\per_gene_global_ana220403\dmz_lm.R
+D:\Linlab\OCT4 induction\TR and total RNA\SEQ220217\per_gene_global_ana220403\naive_marker.R
+D:\Linlab\OCT4 induction\TR and total RNA\SEQ220217\per_gene_global_ana220403\per_genes.R
+D:\Linlab\OCT4 induction\TR and total RNA\SEQ220217\per_gene_global_ana220403\single_condition_per_genes.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\deg_regulation_microRNA.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\deg_regulation_microRNA_12h.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\deg_regulation_microRNA_6h.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\DMZ_Ago.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\EC.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\heatmap_halflife_exp.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\intersect_genes.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\microRNA_2i_LIF.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\miRdatabase_increase.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\miRdatabase_mature.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\OCT4_target_microRNA_exp.R
+D:\Linlab\OCT4 induction\yearly report for 2019\data\replication_test.R
+D:\Linlab\sc_nascentRNA-seq\nascent_total.R
+D:\Linlab\sc_nascentRNA-seq\scn\2021-06-08\nascent_total.R
+D:\Linlab\sc_nascentRNA-seq\scripts_LW\Generate_T_C_matrix.R
+D:\Linlab\work report\dmz\DR_dmz.R
+D:\Linlab\中期报告\data_analysis\barplot.R
+D:\Linlab\中期报告\data_analysis\clean_barplot.R
+D:\Linlab\中期报告\开题报告_qualify\开题报告_qualify\qPCR.R
+D:\Linlab\中期报告\开题报告_qualify\开题报告_qualify\qPCR_data_for_thesis.R
+D:\Linlab\中期报告\开题报告_qualify\开题报告_qualify\qPCR_results\heatmap_ori_scaled.R
+D:\Linlab\中期报告\开题报告_qualify\开题报告_qualify\qPCR_results\heatmap_ori_scaled_Oct4.R
+D:\Linlab\中期报告\开题报告_qualify\开题报告_qualify\qPCR_results\heatmap_ori_scaled_Sox2.R
+D:\Linlab\中期报告\开题报告_qualify\开题报告_qualify\qPCR_results\qPCR_data_for_thesis.R
+D:\Linlab\中期报告\开题报告_qualify\开题报告_qualify\qPCR_results\qPCR_data_for_thesis_3T3.R
+D:\Linlab\合作交流\data_analysis\MuTr20201111_2_所有rate.R
+D:\Linlab\合作交流\data_analysis\MuTr20201111_计算拆分后单细胞修饰rate.R
+D:\Linlab\合作交流\data_analysis\fxcDNA1\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\hfxcDNA2\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\hfxcDNA3\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\inte_seq201109_INTRONIC\intronic\L0_nascent_intron.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\cell_stat_included.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\intron_exon\matrix_exp.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\intron_exon\scRNA_intron_exon_half_life_log_transformed.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\intron_exon\scRNA_intron_exon_half_life_mechanism.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\intron_exon\scRNA_intron_exon_half_life_mechanism_67.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\intron_exon\scRNA_intron_exon_half_life_mechanism_for_YB.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\intron_exon\list_from_LIN\lin_list_nas_data_half_life_corr.R
+D:\Linlab\合作交流\data_analysis\nas0720-01\intron_exon\list_from_LIN\lin_list_nas_data_half_life_corr_60.R
+D:\Linlab\合作交流\data_analysis\nas0720-02\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\ND1\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\ND2\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ0827analyzed1103_bulk\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ0827analyzed1103_bulk\total\exoribonuclease_5_to_3.R
+D:\Linlab\合作交流\data_analysis\SEQ0827analyzed1103_bulk\total\exosome.R
+D:\Linlab\合作交流\data_analysis\SEQ0827analyzed1103_bulk\total\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\lif_158\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\Na_15m_2i\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\Na_15m_NP\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\Na_1h_2i\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\Na_1h_NP\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\PBS_2i\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\PBS_2i\intron_exon\matrix_exp.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\PBS_2i\intron_exon\scRNA_intron_exon_half_life_mechanism.R
+D:\Linlab\合作交流\data_analysis\SEQ0911\PBS_2i\intron_exon\scRNA_intron_exon_half_life_mechanism_new.R
+D:\Linlab\合作交流\data_analysis\SEQ1103\seq1103_2\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ1103\seq1103_2\split_csv\comparation_bar_plot.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210405\LP_NP.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210405\pca.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_marker_genes\du_peng_marker_heatmap_plot.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_marker_genes\du_peng_marker_heatmap_plot2.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_marker_genes\du_peng_marker_heatmap_plot3_noFilter.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_marker_genes\poised_formative_all.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_marker_genes\poised_formative_LP.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_marker_genes\poised_formative_NP.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_pca\pca.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_pca\pca220220.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\analyzed210411_pca\pca_NP_all.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\LP\LP.R
+D:\Linlab\合作交流\data_analysis\seq1204_0105_bulk\grandslam results\NP\NP.R
+D:\Linlab\合作交流\data_analysis\seq200817_bulk\analyzed201211\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\seq200824_bulk\analyzed201211\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\seq200824_bulk\analyzed201211\geneID_exp_dot_plot_NO_filtered.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\220726\bar_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201112\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201112\h6_exp.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118\half_life_fc1.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118\intron_map\0h_72h\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118_NP_total\5_to_3_exo.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118_NP_total\article_mechanism.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118_NP_total\exosome.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118_NP_total\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118_NP_total\heatmap_expression.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118_NP_total\RNA_metabolism_related_genes_heatmap.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118_NP_total\microRNA_biogenesis\microRNA.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201118_NP_total\RNA_stabilization\RNA_stabilization.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201119_2ilif\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201119_2ilif\intron_map_lif\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201204_integrate\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201205_lncRNA\heatmap_expression.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201207_gsSTAR\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201207_gsSTAR\geneID_exp_dot_plot_onlyhl.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\article_mechanism.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\dot_plot&_PCA.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\geneID_exp_dot_plot.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\RNA_metabolism_related_genes_heatmap.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\RNA_stabilization\RNA_stabilization.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\sample_dist\pca.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\total_mechanism\total_mechanism_cpm_norm.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\total_mechanism\total_mechanism_cpm_norm_followed_correlation_test.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\total_mechanism\total_mechanism_DESeq2_norm.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\total_mechanism\total_mechanism_LIN28A.R
+D:\Linlab\合作交流\data_analysis\SEQ201109_bulk\analyzed201221_2ilif_total\total_mechanism\total_mechanism_YBX1.R
+D:\Linlab\合作交流\data_analysis\seq210125_bulk\ana0403\CaL.R
+D:\Linlab\合作交流\data_analysis\seq210125_bulk\ana0403\LP.R
+D:\Linlab\合作交流\data_analysis\seq210125_bulk\ana0403\total\CaL_total.R
+D:\Linlab\合作交流\data_analysis\seq210125_bulk\ana0406_LPC\LPC.R
+D:\Linlab\合作交流\data_analysis\seq210125_bulk\ana0406_LPC\NP.R
+D:\Linlab\合作交流\data_analysis\seq210125_bulk\ana0406_NPPC1\aNPPC1.R
+D:\Linlab\合作交流\data_analysis\seq210125_bulk\ana0406_NPPC2\aNPPC2.R
+D:\Linlab\合作交流\data_analysis\seq210125_bulk\ana0406_PC\aPC.R
+D:\Linlab\合作交流\data_analysis\SEQ210427\calling_cells.R
+D:\Linlab\合作交流\data_analysis\SEQ210427\iDrop_dotplot_umi_barcode.R
+D:\Linlab\合作交流\data_analysis\SEQ210427\summary.R
+D:\Linlab\合作交流\data_analysis\SEQ210427\ana0515_DESeq\D.R
+D:\Linlab\合作交流\data_analysis\SEQ210427\ana0515_DMZ\scanalysis.R
+D:\Linlab\合作交流\data_analysis\SEQ210427\calling_cells\outlier_filter\jq_outlier.R
+D:\Linlab\合作交流\data_analysis\SEQ210427\calling_cells\outlier_filter\jq_outlier_z_score.R
+D:\Linlab\合作交流\data_analysis\SEQ210526\calling_cells_by_threshold.R
+D:\Linlab\合作交流\data_analysis\SEQ210526\cytoTRACE.R
+D:\Linlab\合作交流\data_analysis\SEQ210705_bulk\monoclone\matrix_expression\geneID_exp_dot_plot_NO_filtered.R
+D:\Linlab\合作交流\hwR\test1\test1.R
+D:\Linlab\合作交流\sci-fate_data\GSM3770930_A549_gene_count.txt\umi_barcode.R
+D:\Linlab\合作交流\scNT-seq_data\GSE141851_RAW\GSM4214722_Mix-4SU-IAA_gene_exonic.intronic_tagged.dge.txt\umi_barcode.R
+D:\Linlab\合作交流\scNT-seq_data\GSE141851_RAW\UMIGSM4512669_Neu-Kcl-0min_C.txt\umi_barcode.R
+D:\Linlab\合作交流\scNT-seq_data\GSE141851_RAW\UMIGSM4512669_Neu-Kcl-0min_T.txt\umi_barcode.R
+D:\Linlab\合作交流\scNT-seq_data\mechanism_nas\half_life_correlation.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\analysis_integration01_220804\220804_heatmap_48genes_liuyuxi\rscript_liuyuxi_220804.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_1lifsc\220813_dot_plot_box_plot_02_partialDscore.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_1lifsc\220813_sum_intron_exon_DR_01.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\analyzied_220804\NP1_del3_del369_line_plot.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\analyzied_220804\NP2_del3_del369_line_plot.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\data_validation\box_plot_all.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\decay_rate\density_NP1.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\decay_rate\desity_NP1_NP2.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\dot_plot_density_plot.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\dot_plot_density_plot_1225.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\dot_plot_density_plot_1225_addP_boxplot.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\som_cluster_220612_fc_9_notGOOD.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\som_cluster_220612_fc_adjacent_9_notGOOD.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\som_cluster_220612_fc_adjacent_zscore_8_GOOD.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\som_cluster_220612_fc_zscore_6_GOOD.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\SOM_heatmap_all.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\SOM_heatmap_all_10cluster_notGOOD.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\line_plot\box_plot_som_fc_adjacent_zscore_8_final.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\line_plot\box_plot_som_fc_zscore_6_final.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\line_plot\box_plot_som_z_score.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\naive_primed_TSP\SOM_heatmap\line_plot_decay_rate\line_plot_fc_6_final.R
+D:\Linlab\草稿_article\01current_draft\figure_integration_0603\figure_3_细节\scRNA_seq_datasets\early_embryonic.R
+D:\Linlab\草稿_article\02_version1\230719_rebuttal\权威细胞系表达\GSE30056_RAW_日本人_mEpiLC_2011\symbol_trans.R
+D:\Linlab\草稿_article\02_version1\230719_rebuttal\权威细胞系表达\日本人_mEpiLC_2015\Quantitative Dynamics of Chromatin-state Reprogramming for the Mouse Germ-Cell Specification Pathway In Vitro - GSE60018_normalized_8_samples\symbol_trans.R
+D:\Linlab\草稿_article\02_version1\figure1\partial_D_score\top_bottom_20_230326.R
+D:\Linlab\草稿_article\02_version1\figure2\01clipdb\01_clipdb_bin_bar.R
+D:\Linlab\草稿_article\02_version1\figure2\02term_U\01_termU_bin_bar.R
+D:\Linlab\草稿_article\02_version1\figure2\03reps_unchanged_Gene\unChanged_genes.R
+D:\Linlab\草稿_article\02_version1\figure2\04_go_plot\01_dot_plot_cc_rmeta.R
+D:\Linlab\草稿_article\02_version1\figure2\04_go_plot\02_pie_char_P_log10.R
+D:\Linlab\草稿_article\02_version1\figure2\05_A_len\01_Alen_bin_bar.R
+D:\Linlab\草稿_article\02_version1\figure2\06_distri_U\bar_all_U_style.R
+D:\Linlab\草稿_article\02_version1\figure2\06_distri_U\length_term3Tadd_distribution.R
+D:\Linlab\草稿_article\02_version1\figure2\06_distri_U\length_term6Tadd_distribution.R
+D:\Linlab\草稿_article\02_version1\figure4\dot_edge_density\220907_bin_dot_plot_corr_DR_all.R
+D:\Linlab\草稿_article\02_version1\figure4\dot_edge_density\test_only_x.R
+D:\Linlab\草稿_article\answers\answers\dyngenR.R
+D:\Linlab\草稿_article\answers\answers\dyngentmpcode.R
+D:\Linlab\草稿_article\answers\answers\dyngentmpcode_JQ.R
+D:\Linlab\草稿_article\answers\__MACOSX\answers\._dyngentmpcode.R
+D:\Linlab\草稿_article\figure1\box_plot\230108_dot_plot.R
+D:\Linlab\草稿_article\figure1\box_plot\230304_dot_plot_reps.R
+D:\Linlab\草稿_article\figure1\box_plot\230314_dot_plot_colorChanged_three.R
+D:\Linlab\草稿_article\figure1\box_plot\230314_dot_plot_reps_colorChanged.R
+D:\Linlab\草稿_article\figure1\box_plot\box_plot_all.R
+D:\Linlab\草稿_article\figure1\box_plot\box_plot_all_with210722.R
+D:\Linlab\草稿_article\figure1\box_plot\box_plot_reps.R
+D:\Linlab\草稿_article\figure1\box_plot\box_plot_selected_final1_211020.R
+D:\Linlab\草稿_article\figure1\box_plot\trinity_selected_220818.R
+D:\Linlab\草稿_article\figure1\data_validation_2iL\230314_dot_plot_PC_colorChanged.R
+D:\Linlab\草稿_article\figure1\data_validation_2iL\data_validation.R
+D:\Linlab\草稿_article\figure1\data_validation_2iL\data_validation_LPC.R
+D:\Linlab\草稿_article\figure1\dot_edge_density\dot_edge_density.R
+D:\Linlab\草稿_article\figure1\heatmap_NP_DR\heatmap_expression.R
+D:\Linlab\草稿_article\figure1\heatmap_NP_DR\SOM_heatmap.R
+D:\Linlab\草稿_article\figure1\heatmap_NP_DR\SOM_heatmap_final_211115.R
+D:\Linlab\草稿_article\figure1\heatmap_NP_DR\ReadCounts_bad_results_wrong\heatmap_expression.R
+D:\Linlab\草稿_article\figure1\heatmap_NP_DR\ReadCounts_bad_results_wrong\SOM_heatmap.R
+D:\Linlab\草稿_article\figure1\heatmap_NP_DR\ReadCounts_bad_results_wrong\SOM_heatmap_12cluster.R
+D:\Linlab\草稿_article\figure1\heatmap_NP_DR\ReadCounts_bad_results_wrong\SOM_heatmap_5cluster.R
+D:\Linlab\草稿_article\figure1\heatmap_NP_DR\ReadCounts_bad_results_wrong\SOM_heatmap_final_211115.R
+D:\Linlab\草稿_article\figure1\PulseChase\PC_LPC_036.R
+D:\Linlab\草稿_article\figure1\PulseChase\PC_priPC_210705_036.R
+D:\Linlab\草稿_article\figure1\PulseChase\PC_priPC_210705_all.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\ana_211216_target_genes\target_genes.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\nascent_RNA\nascent_RNA.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\total_RNA\total_RNA.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\220906_2ilifN1h_binBARplot.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\220906_corr_genes.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\220906_heatmap.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\220907_bin_dot_plot_corr_DR_all.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\220910_corr_nascent_2i_lif.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\bin_dot_plot_corr_DR_sparse.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\corr.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\nascent_RNA.R
+D:\Linlab\草稿_article\figure2\ERT2_OCT4\EO_191118\trimmed_1227\total_RNA.R
+D:\Linlab\草稿_article\figure4\heatmap_marker_gene_filtered.R
+D:\Linlab\草稿_article\supplements\RNA_amount_211125\bar_plot.R

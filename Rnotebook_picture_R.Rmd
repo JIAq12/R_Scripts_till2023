@@ -1,0 +1,1902 @@
+---
+title: "R Notebook for linLAB R scripts"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc: yes
+  html_notebook:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+mainfont: SimSun
+---
+## Part I: Refined pictures used for publishing articles
+### 1. Horizental Box Plot
+```{r "horizental box plot"}
+# Load required package
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("pheatmap")) install.packages("pheatmap")
+library(pheatmap)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("limma")) install.packages("limma")
+library(limma) 
+if (!require("edgeR")) install.packages("edgeR")
+library(edgeR)
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+#BiocManager::install("ggdendro", version = "3.8")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("biomaRt")) install.packages("biomaRt")
+library('biomaRt')
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("tidyverse")) install.packages("tidyverse")
+library("tidyverse")
+if (!require("ggpubr")) install.packages("ggpubr")
+#install.packages("ggplot2")
+#install.packages("ggpubr")
+library("ggpubr")
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("forcats")) install.packages("forcats")
+library(forcats)
+all_matrix<-read.csv("D:\\Linlab\\草稿_article\\figure1\\box_plot\\integrate_all.csv",row.names = 1)
+head(all_matrix)
+all_matrix_selected<-as.data.frame(all_matrix[,c("NP0_1106MAP","L2i0a_MAP","NP72b_1106MAP")])
+#write.csv(all_matrix_selected,"matrix_selected_for_boxplot_DR.csv")
+all_matrix_MAPcorr_matrix<-cor(all_matrix_selected,method = "spearman")
+all_matrix_MAPcorr<-cor.test(all_matrix_selected$NP0_1106MAP,all_matrix_selected$L2i0a_MAP,method = "spearman")
+
+box_final <- all_matrix_selected %>% gather(colnames(all_matrix_selected),
+                                     key='class',value='MAP')
+box_final2 <-as.data.frame(box_final[,c("class","MAP")])
+
+###draw the box plot [final version]
+box_final2$class = with(box_final2, reorder(class, MAP, median))
+#Data$Group = factor(Data$Group,levels = c("Control","Before thrombolytic therapy","After thrombolytic therapy"))
+
+p1<-box_final2 %>% 
+  ggplot(aes(class, MAP)) + 
+  # geom_violin(aes(fill = class),trim = F) + 
+  #geom_boxplot(alpha=0.7,outlier.shape = NA,outlier.colour = NA) +
+  stat_boxplot(geom = 'errorbar', width = 0.1) + 
+  geom_boxplot(aes(fill = class), width = 0.2, show.legend = F,outlier.shape = NA,outlier.colour = NA) +
+  #geom_jitter(aes(shape = class)) + 
+  coord_trans(x = "identity", y = "identity", xlim = NULL, ylim = c(0,0.8))+
+  stat_summary(fun = median, geom = 'point', color = 'dark grey', size = rel(2)) + 
+  #guides(shape = F, color = F) + 
+  labs(x = "Different cell line", y = "mRNA decay rate")+
+  scale_fill_brewer(palette = 'Set2')+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=24),
+         axis.text.x = element_text(size=16),
+         axis.text.y = element_text(size=22),
+         axis.title = element_text(face="bold"))
+# theme_bw() + 
+# scale_fill_brewer(palette = 'Set2')
+mycomparision <- list(c("L2i0a_MAP", "NP0_1106MAP"), c("NP0_1106MAP", "NP72b_1106MAP"), c("L2i0a_MAP", "NP72b_1106MAP"))
+#data:  Sepal.Length by Species
+#Bartlett's K-squared = 16.006, df = 2, p-value = 0.0003345,For heteroscedasticity, use non-parametric tests.。
+#p1 <- p + stat_compare_means(method = 'wilcox.test', comparisons = mycomparision, label = 'p.signif',label.y = c(0.5, 0.57, 0.65)) #use star for dispaly
+#p1
+##without annova value:
+p1_1 <- p1 + stat_compare_means(method = 't.test', comparisons = mycomparision, label = 'p.signif',label.y = c(0.5, 0.57, 0.65))
+#p1_1
+##with annova value:
+p1_2 <- p1 + stat_compare_means(method = 't.test', comparisons = mycomparision, label = 'p.signif',label.y = c(0.5, 0.57, 0.65)) +stat_compare_means(method = "anova", label.y = 0.75,size=6)
+p1_2
+##with horizental box plot:
+horizental<-p1+coord_flip()
+plot(horizental, choix = "ind")
+```
+
+
+### 2. Trinity Plot
+```{r "trinity plot"}
+# Load required package
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("pheatmap")) install.packages("pheatmap")
+library(pheatmap)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("limma")) install.packages("limma")
+library(limma) 
+if (!require("edgeR")) install.packages("edgeR")
+library(edgeR)
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("biomaRt")) install.packages("biomaRt")
+library('biomaRt')
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("tidyverse")) install.packages("tidyverse")
+library("tidyverse")
+if (!require("ggpubr")) install.packages("ggpubr")
+library("ggpubr")
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("forcats")) install.packages("forcats")
+library(forcats)
+if (!require("ggtern")) install.packages("ggtern")
+library(ggtern)
+if (!require("viridis")) install.packages("viridis")
+library(viridis)
+if (!require("RColorBrewer")) install.packages("RColorBrewer")
+library(RColorBrewer)
+all_matrix<-read.csv("D:\\Linlab\\草稿_article\\figure1\\box_plot\\integrate_all.csv",row.names = 1)
+head(all_matrix)
+###select three group for final bar_plot
+all_matrix_selected<-as.data.frame(all_matrix[,c("NP0_1106MAP","L2i0a_MAP","NP72b_1106MAP")])
+#write.csv(all_matrix_selected,"matrix_selected_for_boxplot_DR.csv")
+colnames(all_matrix_selected)<-c("ground","naive","formative")
+colormap<-rev(brewer.pal(20,'Spectral'))
+p2<-ggtern(data=all_matrix_selected, aes(x=ground, y=naive, z=formative)) +
+  geom_point(size=0.09,alpha=0.2,colour="grey")+
+  stat_density_tern(
+    geom='polygon',
+    bdl.val = NA,
+    aes(fill=..level..,
+        alpha=..level..))+
+  scale_fill_gradientn(colours=colormap)+
+  #scale_color_viridis()
+  #scale_fill_gradient(low = "blue",
+  #                    high = "red")+
+  #scale_fill_gradient(colours=colormap)
+  theme_bvbw() 
+plot(p2, choix = "ind")
+```
+
+### 3. SOM clustered heatmap and line plot for each cluster
+
+```{r "SOM clustered heatmap and line plot for each cluster"}
+# Load required package
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("pheatmap")) install.packages("pheatmap")
+library(pheatmap)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("limma")) install.packages("limma")
+library(limma) 
+if (!require("edgeR")) install.packages("edgeR")
+library(edgeR)
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("biomaRt")) install.packages("biomaRt")
+library('biomaRt')
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("tidyverse")) install.packages("tidyverse")
+library("tidyverse")
+if (!require("ggpubr")) install.packages("ggpubr")
+library("ggpubr")
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("forcats")) install.packages("forcats")
+library(forcats)
+if (!require("ggtern")) install.packages("ggtern")
+library(ggtern)
+if (!require("viridis")) install.packages("viridis")
+library(viridis)
+if (!require("RColorBrewer")) install.packages("RColorBrewer")
+library(RColorBrewer)
+if (!require("som")) install.packages("som")
+library(som)
+if (!require("reshape")) install.packages("reshape")
+library(reshape)
+if (!require("kohonen")) BiocManager::install("kohonen")
+library(kohonen)
+if (!require("pheatmap")) install.packages("pheatmap")
+library(pheatmap)
+if (!require("magrittr")) install.packages("magrittr")
+library(magrittr)
+
+summarySE_median <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                             conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  datac <- ddply(data, groupvars, .drop=.drop,.fun = function(xx, col) {
+    c(sum    = sum(as.numeric(as.character(xx[[col]]))),
+      N    = length2(xx[[col]]),
+      median = median(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+      sd   = sd(as.numeric(as.character(xx[[col]])))
+    )
+  },
+  measurevar
+  )
+  # Rename the "mean" column
+  # datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+
+np_verified_cpm<- as.data.frame(na.omit(read.csv("D:\\Linlab\\草稿_article\\01current_draft\\figure_integration_0603\\figure_3_细节\\naive_primed_TSP\\SOM_heatmap\\np_verified_cpm.csv",header=TRUE,row.names = 1)))
+np_verified_map<- as.data.frame(na.omit(read.csv("D:\\Linlab\\草稿_article\\01current_draft\\figure_integration_0603\\figure_3_细节\\naive_primed_TSP\\SOM_heatmap\\np_verified_map.csv",header=TRUE,row.names = 1)))
+
+#filter the genes by cpm >10 (less than 1)
+keep.exprs3 <- rowSums(np_verified_cpm>10)>=1
+np_verified_cpm_filtered <- np_verified_cpm[keep.exprs3,]
+# Set seed, just make sure you keep the same. 
+# Has to do with the randomization process. 
+np_verified_cpm_filtered<-as.data.frame(np_verified_cpm_filtered)
+logFC_np<-cbind(log2(np_verified_cpm_filtered$NP0/apply(np_verified_cpm_filtered,1,min)),
+                log2(np_verified_cpm_filtered$NP3/apply(np_verified_cpm_filtered,1,min)),
+                log2(np_verified_cpm_filtered$NP6/apply(np_verified_cpm_filtered,1,min)),
+                log2(np_verified_cpm_filtered$NP9/apply(np_verified_cpm_filtered,1,min)),
+                log2(np_verified_cpm_filtered$NP12/apply(np_verified_cpm_filtered,1,min)),
+                log2(np_verified_cpm_filtered$NP24/apply(np_verified_cpm_filtered,1,min)),
+                log2(np_verified_cpm_filtered$NP36/apply(np_verified_cpm_filtered,1,min)),
+                log2(np_verified_cpm_filtered$NP48/apply(np_verified_cpm_filtered,1,min)))
+rownames(logFC_np)<-rownames(np_verified_cpm_filtered)
+colnames(logFC_np)<-colnames(np_verified_cpm_filtered)
+
+#higher than 0.5:
+scale_data <- as.matrix(t(scale(t(logFC_np))))
+y1.som <- som(scale_data, somgrid(16, 16, "hexagonal")) 
+plot(y1.som, type = "codes") # Plots SOM clustering result.
+summary(y1.som)
+plot(y1.som, type ="changes")
+#plot(y1.som, type = "codes")
+plot(y1.som, type = "counts")
+plot(y1.som, type="dist.neighbours")
+#changed to dataframe to extract column names easier.
+y1.som$data <- data.frame(y1.som$data)  
+
+## use hierarchical clustering to cluster the codebook vectors
+som_cluster <- cutree(hclust(dist(y1.som$codes[[1]])), 6)
+
+# plot these results:
+plot(y1.som, type="mapping", bgcol = som_cluster, main = "Clusters") 
+add.cluster.boundaries(y1.som, som_cluster) 
+# Attach the hierchal cluster to the larger dataset data.val.
+som_clusterKey <- data.frame(som_cluster)
+som_clusterKey$unit.classif <- c(1:256)
+
+data.val <- cbind(rownames(scale_data),logFC_np,y1.som$unit.classif,y1.som$distances)
+head(data.val)
+#Merge data.val with som_clusterKey
+##change data.val to match som_cluster key 
+colnames(data.val)<-c("genes",colnames(logFC_np),"unit.classif","distance")
+data.val <- merge(data.val, som_clusterKey, by.x = "unit.classif" ) #ignore warning, this is what you want.  You are essentially filling in the empties with the value from som_clusterKey
+head(data.val)
+#write.csv(data.val,"som_cluster_220612_fc_zscore_6_final.csv")
+
+data.val<-as.data.frame(data.val)
+cluster_set_finalorder_c12<-data.val[order(data.val$som_cluster,decreasing=F),]
+
+bk = unique(c(seq(0,1, length=100)))
+cluster_set_finalorder_c12<-as.data.frame(cluster_set_finalorder_c12[,-2])
+cluster_set_finalorder_c12=apply(cluster_set_finalorder_c12,2,as.numeric)
+cluster_set_finalorder_c13<-data.val[order(data.val$som_cluster,decreasing=F),]
+rownames(cluster_set_finalorder_c12)<-cluster_set_finalorder_c13[,2]
+
+my_gene_col<-as.data.frame(gsub("^", "cluster_", cluster_set_finalorder_c13$som_cluster))
+rownames(my_gene_col)<-rownames(cluster_set_finalorder_c12)
+colnames(my_gene_col)<-c("cluster")
+pheatmap( cluster_set_finalorder_c12[,c(2:9)]
+              , annotation_row = my_gene_col
+              ,breaks = bk
+              ,scale ="none"
+              #,annotation_row = pos_df
+              #,clustering_method = "ward.D"
+              #,clustering_distance_rows = "correlation"
+              ,cluster_cols = FALSE
+              ,cluster_rows = FALSE
+              ,show_rownames= F
+              ,show_colnames= T
+              ,border_color = "NA"
+)
+
+##line_plot
+cluster_set_finalorder_c122<-cluster_set_finalorder_c12[,c(2:9)]
+cluster_set_finalorder_c122<-cbind(rownames(cluster_set_finalorder_c122),cluster_set_finalorder_c122)
+#colnames(cluster_set_finalorder_c122)[9]<-"NP0"
+cluster_set_finalorder_c122<-as.data.frame(cluster_set_finalorder_c122)
+box_final <- cluster_set_finalorder_c122 %>% gather(colnames(cluster_set_finalorder_c122)[-1],
+                                                    key='condition',value='abTR')
+cluster_set<-cbind(cluster_set_finalorder_c12[,c("unit.classif","som_cluster")],
+                   rownames(cluster_set_finalorder_c12))
+colnames(cluster_set)<-c("unit.classif","som_cluster","V1")
+box_final2 <- merge(cluster_set, box_final, by.x = "V1" )
+
+box_final2_summary<-summarySE_median(box_final2,measurevar = "abTR",groupvars = c("som_cluster","condition"))
+#box_final2_summary[is.na(box_final2_summary)] <- "NP0"
+##line plot:
+box_final2_summary$condition <- factor(box_final2_summary$condition,levels=c("NP0","NP3","NP6","NP9","NP12","NP24","NP36","NP48"))
+p3<-ggplot(box_final2_summary, 
+          aes(x = condition, y = as.numeric(as.character(median)), group = som_cluster,color=som_cluster))+
+  #geom_line(size = 2) +
+  geom_smooth(se = FALSE, span = 0.95,size = 2)+
+  labs(x = "Time after transition", y = "mRNA FC(log2)")+
+  ylim(0,1)+
+  scale_color_brewer(palette = 'Set3')+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=24),
+         axis.text.x = element_text(size=16),
+         axis.text.y = element_text(size=22),
+         axis.title = element_text(face="bold"))
+plot(p3)
+```
+
+
+### 4. Seurat Dot Plot for scRNA-seq and Colored D-score
+```{r "Seurat dot plot for scRNA-seq and colored D-score"}
+# Load required package
+if (!require("org.Mm.eg.db")) install.packages("org.Mm.eg.db")
+library(org.Mm.eg.db)
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("pheatmap")) install.packages("pheatmap")
+library(pheatmap)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("limma")) install.packages("limma")
+library(limma) 
+if (!require("edgeR")) install.packages("edgeR")
+library(edgeR)
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("biomaRt")) install.packages("biomaRt")
+library('biomaRt')
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("Seurat")) install.packages("Seurat")
+library(Seurat)
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("patchwork")) install.packages("patchwork")
+library(patchwork)
+
+summarySE_median <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                             conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  datac <- ddply(data, groupvars, .drop=.drop,.fun = function(xx, col) {
+    c(sum    = sum(as.numeric(as.character(xx[[col]]))),
+      N    = length2(xx[[col]]),
+      median = median(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+      sd   = sd(as.numeric(as.character(xx[[col]])))
+    )
+  },
+  measurevar
+  )
+  # Rename the "mean" column
+  # datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+#do the pca part for 146w clustering:
+matrix_anno <-as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\lasso_1113union_allGENE\\seurat230111\\anno2i_F48.csv",header = TRUE,row.names = 2))
+tsne_clustering <-as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\lasso_1113union_allGENE\\seurat230111\\2iF48_tsne_clustering.csv",header = TRUE,row.names = 1))
+x2i_DR<-as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\lasso_1113union_allGENE\\seurat230111\\x2i_DR_sum_intron_exon_filterHgene.csv",row.names = 2))
+rownames(x2i_DR)<-gsub("^", "X2i", rownames(x2i_DR))
+pri_DR<-as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\lasso_1113union_allGENE\\seurat230111\\xF48_DR_sum_intron_exon_filterHgene.csv",row.names = 2))
+rownames(pri_DR)<-gsub("^", "F48", rownames(pri_DR))
+deg_26<-rbind(x2i_DR,pri_DR)
+cell_cycle<-read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\lasso_1113union_allGENE\\seurat230111\\cell_cycle_identity.csv",row.names = 1)
+
+all_matrix<-na.omit(cbind(rownames(deg_26),cell_cycle[rownames(deg_26),],matrix_anno[rownames(deg_26),2],deg_26[,2],tsne_clustering[rownames(deg_26),]))
+#install.packages("tidyr")
+colnames(all_matrix)<-c("cell","cell_cycle","state","D_score",colnames(tsne_clustering))
+library(tidyr)
+tag <- paste(all_matrix[,"cell_cycle"],all_matrix[,"state"],sep="_",collapse = NULL)
+all_matrix<-cbind(all_matrix,tag)
+colnames(all_matrix)<-c("cell","cell_cycle","state","D_score",colnames(tsne_clustering),"tag")
+all_matrix$D_score<-scale(all_matrix$D_score)
+all_matrix$D_score[which(all_matrix$D_score>1)]<-1
+all_matrix$D_score[which(abs(all_matrix$D_score)>1)]<-(-1)
+
+p4<-ggplot(all_matrix, aes(x=as.numeric(as.character(tSNE_1)), y=as.numeric(as.character(tSNE_2)),colour=state)) +
+  geom_point(size = 1) +
+  #colour="lightcoral"
+  labs(x = "tSNE_1", y = "tSNE_2")+
+  #scale_colour_manual(values=cc)+ 
+  scale_color_brewer(palette = 'Set2')+
+  theme_bw()+
+  ylim(-45,45)+
+  xlim(-45,45)+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+plot(p4)
+
+#colored DR for the dot plot
+###remember to replace >1 and <-1(use abs)
+p4_2<-ggplot(all_matrix, aes(x=as.numeric(as.character(tSNE_1)), y=as.numeric(as.character(tSNE_2)),shape=state,colour=as.numeric(as.character(D_score)))) +
+  geom_point(size = 2) +
+  #colour="lightcoral"
+  labs(x = "tSNE_1", y = "tSNE_2")+
+  #scale_fill_continuous(low='#fcbba1',high='#67000d')+
+  scale_colour_gradient2(
+    low = "#1a9850",
+    limits=c(-1, 1),
+    mid = "#ffffbf",
+    midpoint = 0,
+    #space = "Lab",
+    high = "#d73027")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  ylim(-45,45)+
+  xlim(-45,45)+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+plot(p4_2)
+```
+
+### 5. Dot-Line Plot for GO Clusters
+```{r "Dot-line plot for GO clusters"}
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+#do the pca part for 146w clustering:
+matrix_anno <-as.data.frame(read.csv("D:\\Linlab\\草稿_article\\02_version1\\figure2\\04_go_plot\\go_two_sets_for_drawing.csv",header = TRUE))
+###12-4 for drawing
+p5<-ggplot(matrix_anno, aes(x=Description, y=Log10.P.,colour=datasets,size=percent,group=Description)) +
+  geom_point() +
+  #colour="lightcoral"
+  labs(x = "-log(P)", y = "")+
+  #scale_colour_manual(values=cc)+ 
+  scale_color_brewer(palette = 'Set2')+
+  theme_bw()+
+  #ylim(-45,45)+
+  #xlim(-45,45)+
+  scale_x_discrete(expand = c(0.45,0.45))+
+  scale_size_continuous(range = c(5,9))+
+  coord_flip()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+#matrix_anno$Description<-factor(matrix_anno$Description)
+p5+geom_line(size = 1.5, color = "grey")
+```
+
+### 6. Venn Plot
+```{r "Venn plot"}
+if (!require("VennDiagram")) install.packages("VennDiagram")
+#install.packages("VennDiagram")
+library(VennDiagram)
+x2iF48<-read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\anova_1115_YMS\\2iF48_qvalue_validata0.05.csv",row.names = 2)
+P<-read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\anova_1115_YMS\\P_qvalue_validata0.05.csv",row.names = 2)
+gene_final<-read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\anova_1115_YMS\\genes_Metabolism_norRNA_noNONCoding.csv")
+nrow(na.omit(x2iF48[gene_final[,"X"],]))
+nrow(na.omit(P[gene_final[,"X"],]))
+x2iF48_final<-na.omit(na.omit(x2iF48[gene_final[,"X"],]))
+P_final<-na.omit(na.omit(P[gene_final[,"X"],]))
+length(intersect(rownames(x2iF48_final),rownames(P_final)))
+all_final<-cbind(x2iF48_final[intersect(rownames(x2iF48_final),rownames(P_final)),],
+                 P_final[intersect(rownames(x2iF48_final),rownames(P_final)),])
+colnames(all_final)<-c("x2iF48_X","x2iF48_score","x2iF48_p_values","x2iF48_q_values","P_X","P_score","P_p_values","P_q_values")
+
+#mydata<-list(Lif2i=1:271,NP=105:287)
+#ggVennDiagram(mydata)
+#+
+#  scale_fill_brewer(palette="Set2")
+temp<-venn.diagram(list(x2iF48=1:271,P=106:285),
+                   
+                   alpha=c(0.6,0.6),
+                   
+                   fill=c("#00AFBB","#FC4E07"), cat.fontface=4,
+                   
+                   main.cex= 2, main.fontface= 2,
+                   
+                   filename= NULL,scaled=T)
+grid.draw(temp)
+```
+
+
+### 7. Line Plot for Specific Genes in Different Condition (seperate patches)
+```{r "Line plot for specific genes in different condition"}
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("pheatmap")) install.packages("pheatmap")
+library(pheatmap)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("magrittr")) install.packages("magrittr")
+library(magrittr)
+if (!require("tidyverse")) install.packages("tidyverse")
+library(tidyverse)
+if (!require("patchwork")) install.packages("patchwork")
+library(patchwork)
+##Deadenylation-dependent mRNA decay
+deade_genes2<-read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\classifier_rescSEQ_220823\\anova_1115_YMS\\03_heatmap_path\\deade_genes_230423.csv",row.names = 1)
+deade_genes2<-cbind(rownames(deade_genes2),deade_genes2)
+
+library(patchwork)
+deade_genes_Pabpc1<-deade_genes2["Pabpc1",]
+line_Pabpc1 <- deade_genes_Pabpc1 %>% gather(colnames(deade_genes_Pabpc1)[-1],
+                                             key='condition',value='cpm')
+colnames(line_Pabpc1)<-c("genes","condition","cpm")
+line_Pabpc1_1<-line_Pabpc1[c(1:4),]
+line_Pabpc1_1[,"cpm"]<-scale(line_Pabpc1_1[,"cpm"])
+#pab<-line_Pabpc1[line_Pabpc1[,1]=="Pabpc1",]
+pdf(file = "line_Pabpc1.pdf",width = 9.5,height = 3)
+p1<-ggplot(line_Pabpc1_1,
+           aes(x = condition, y = as.numeric(as.character(cpm)),group = 1))+
+  geom_line(colour = "gray",size = 1,alpha=2) +
+  scale_x_discrete(expand = c(0.02, 0.02))+
+  labs(x = "", y = "z-score")+
+  ylim(-1.5,1.5)+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         panel.grid.major = element_line(colour="white"),
+         panel.grid.minor = element_line(colour="white"),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=8),
+         axis.text.x = element_text(size=8),
+         axis.text.y = element_text(size=8),
+         axis.title = element_text(face="bold"),
+  )
+
+line_Pabpc1_2<-line_Pabpc1[c(5:8),]
+line_Pabpc1_2[,"cpm"]<-scale(line_Pabpc1_2[,"cpm"])
+p2<-ggplot(line_Pabpc1_2,
+           aes(x = condition, y = as.numeric(as.character(cpm)),group = 1))+
+  geom_line(colour = "gray",size = 1,alpha=2) +
+  scale_x_discrete(expand = c(0.02, 0.02))+
+  labs(x = "", y = "z-score")+
+  ylim(-1.5,1.5)+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         panel.grid.major = element_line(colour="white"),
+         panel.grid.minor = element_line(colour="white"),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=8),
+         axis.text.x = element_text(size=8),
+         axis.text.y = element_text(size=8),
+         axis.title = element_text(face="bold"))
+
+library(ggplot2)
+line_Pabpc1_3<-line_Pabpc1[c(9:12),]
+line_Pabpc1_3[,"cpm"]<-scale(line_Pabpc1_3[,"cpm"])
+p3<-ggplot(line_Pabpc1_3,
+           aes(x = condition, y = as.numeric(as.character(cpm)),group = 1))+
+  geom_line(colour = "gray",size = 1,alpha=2) +
+  scale_x_discrete(expand = c(0.02, 0.02))+
+  labs(x = "", y = "z-score")+
+  ylim(-1.5,1.5)+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         panel.grid.major = element_line(colour="white"),
+         panel.grid.minor = element_line(colour="white"),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=8),
+         axis.text.x = element_text(size=8),
+         axis.text.y = element_text(size=8),
+         axis.title = element_text(face="bold"))
+
+p1|p2|p3
+dev.off()
+
+library(patchwork)
+deade_genes_Eif4a2<-deade_genes2["Eif4a2",]
+line_Eif4a2 <- deade_genes_Eif4a2 %>% gather(colnames(deade_genes_Eif4a2)[-1],
+                                             key='condition',value='cpm')
+colnames(line_Eif4a2)<-c("genes","condition","cpm")
+line_Eif4a2_1<-line_Eif4a2[c(1:4),]
+line_Eif4a2_1[,"cpm"]<-scale(line_Eif4a2_1[,"cpm"])
+#pab<-line_Eif4a2[line_Eif4a2[,1]=="Eif4a2",]
+pdf(file = "line_Eif4a2.pdf",width = 9.5,height = 3)
+p1_Eif4a2<-ggplot(line_Eif4a2_1,
+                  aes(x = condition, y = as.numeric(as.character(cpm)),group = 1))+
+  geom_line(colour = "gray",size = 1,alpha=2) +
+  scale_x_discrete(expand = c(0.02, 0.02))+
+  labs(x = "", y = "z-score")+
+  ylim(-1.5,1.5)+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         panel.grid.major = element_line(colour="white"),
+         panel.grid.minor = element_line(colour="white"),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=8),
+         axis.text.x = element_text(size=8),
+         axis.text.y = element_text(size=8),
+         axis.title = element_text(face="bold"),
+  )
+
+line_Eif4a2_2<-line_Eif4a2[c(5:8),]
+line_Eif4a2_2[,"cpm"]<-scale(line_Eif4a2_2[,"cpm"])
+p2_Eif4a2<-ggplot(line_Eif4a2_2,
+                  aes(x = condition, y = as.numeric(as.character(cpm)),group = 1))+
+  geom_line(colour = "gray",size = 1,alpha=2) +
+  scale_x_discrete(expand = c(0.02, 0.02))+
+  labs(x = "", y = "z-score")+
+  ylim(-1.5,1.5)+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         panel.grid.major = element_line(colour="white"),
+         panel.grid.minor = element_line(colour="white"),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=8),
+         axis.text.x = element_text(size=8),
+         axis.text.y = element_text(size=8),
+         axis.title = element_text(face="bold"))
+
+library(ggplot2)
+line_Eif4a2_3<-line_Eif4a2[c(9:12),]
+line_Eif4a2_3[,"cpm"]<-scale(line_Eif4a2_3[,"cpm"])
+p3_Eif4a2<-ggplot(line_Eif4a2_3,
+                  aes(x = condition, y = as.numeric(as.character(cpm)),group = 1))+
+  geom_line(colour = "gray",size = 1,alpha=2) +
+  scale_x_discrete(expand = c(0.02, 0.02))+
+  labs(x = "", y = "z-score")+
+  ylim(-1.5,1.5)+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         panel.grid.major = element_line(colour="white"),
+         panel.grid.minor = element_line(colour="white"),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=8),
+         axis.text.x = element_text(size=8),
+         axis.text.y = element_text(size=8),
+         axis.title = element_text(face="bold"))
+
+p1_Eif4a2|p2_Eif4a2|p3_Eif4a2
+dev.off()
+#then use AI to modify the picture
+```
+
+### 8. Distribution/Density Plot
+```{r "Distribution/density plot for polyA length"}
+if (!require("ggplot2")) install.packages("ggplot2")
+library("ggplot2")
+if (!require("dplyr")) install.packages("dplyr")
+library("dplyr")
+x2iP2A<-read.table("D:\\Linlab\\OCT4 induction\\mechanism\\PIPA_seq\\PIPA-220214\\results\\sample_2iP2A_trimmed_tail_apart_final_R1R2_dedupAlength.txt",header=FALSE)
+x2iP2A<-cbind(x2iP2A,"2iP2A")
+colnames(x2iP2A)<-c("length","group")
+nrow(x2iP2A)
+x2iP2AD<-read.table("D:\\Linlab\\OCT4 induction\\mechanism\\PIPA_seq\\PIPA-220214\\results\\sample_2iP2AD_trimmed_tail_apart_final_R1R2_dedupAlength.txt",header=FALSE)
+x2iP2AD<-cbind(x2iP2AD,"2iP2AD")
+colnames(x2iP2AD)<-c("length","group")
+nrow(x2iP2AD)
+x2i<-read.table("D:\\Linlab\\OCT4 induction\\mechanism\\PIPA_seq\\PIPA-220214\\results\\sample_2i_trimmed_tail_apart_final_R1R2_dedupAlength.txt",header=FALSE)
+x2i<-cbind(x2i,"2i")
+colnames(x2i)<-c("length","group")
+lif<-read.table("D:\\Linlab\\OCT4 induction\\mechanism\\PIPA_seq\\PIPA-220214\\results\\sample_lif_trimmed_tail_apart_final_R1R2_dedupAlength.txt",header=FALSE)
+lif<-cbind(lif,"lif")
+nrow(lif)
+colnames(lif)<-c("length","group")
+Pri<-read.table("D:\\Linlab\\OCT4 induction\\mechanism\\PIPA_seq\\PIPA-220214\\results\\sample_Pri_trimmed_tail_apart_final_R1R2_dedupAlength.txt",header=FALSE)
+Pri<-cbind(Pri,"Pri")
+colnames(Pri)<-c("length","group")
+nrow(Pri)
+
+U_total<-as.data.frame(rbind(x2iP2A,x2iP2AD,x2i,lif,Pri))
+#U_total<-as.data.frame(rbind(x2i,Pri))
+U_total %>%
+  group_by(group) %>%
+  summarise(avg = mean(length))
+#change the Adjacency matrix to density matrix
+#####draw the density plot
+#pdf(file = "poly(A)_length_distribution.pdf",width=20,height=16)
+p8<-ggplot(U_total,aes(x=as.numeric(as.character(length)),colour=group))+
+  # ylim(0,0.4)+
+  #xlim(2,20)+
+  geom_density(size = 2)+
+  ggtitle("Poly(A) length distribution") +
+  labs(y = "Density", x = "Poly(A) length")+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))
+
+plot(p8)
+#dev.off()
+```
+
+### 9. Dot Plot With Density Info
+```{r "Dot plot with density info"}
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("limma")) install.packages("limma")
+library(limma)
+if (!require("edgeR")) install.packages("edgeR")
+library(edgeR)
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("biomaRt")) install.packages("biomaRt")
+library('biomaRt')
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("tidyverse")) install.packages("tidyverse")
+library("tidyverse")
+if (!require("plyr")) install.packages("plyr")
+library(plyr)
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("viridis")) install.packages("viridis")
+library(viridis)
+total_MAP_211119 <- as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\ana220511_inte_three\\total_MAP_211119.csv",header=TRUE,row.names=1))
+total_MAP_211205 <- as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\ana220511_inte_three\\total_MAP_211205.csv",header=TRUE,row.names=1))
+TNPsiNP_MAP_rep1 <- as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\ana220511_inte_three\\TNPsiNP_MAP.csv",header=TRUE,row.names=1))
+#delete genes which deg == 0
+keep.exprs1 <- rowSums(total_MAP_211119>0)>=ncol(total_MAP_211119)
+total_MAP_211119 <- total_MAP_211119[keep.exprs1,]
+
+keep.exprs2 <- rowSums(total_MAP_211205>0)>=ncol(total_MAP_211205)
+total_MAP_211205 <- total_MAP_211205[keep.exprs2,]
+
+keep.exprs3 <- rowSums(TNPsiNP_MAP_rep1>0)>=ncol(TNPsiNP_MAP_rep1)
+TNPsiNP_MAP_rep1 <- TNPsiNP_MAP_rep1[keep.exprs3,]
+total_TNPsiNP<-read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\SEQ220505_TNPsiNPrep1\\counts\\total_matrix_gene_ID_220505.csv",row.names = 1)
+#filter by Rcounts>50 >ncol/2 cpm(4.58)
+total_TNPsiNP<-total_TNPsiNP[,c(1,2,3,7,8,9)]
+keep.exprs_total <- rowSums(total_TNPsiNP>4.58)>=ncol(total_TNPsiNP)/2
+total_TNPsiNP <- total_TNPsiNP[keep.exprs_total,]
+TNPsiNP_MAP_rep1<-na.omit(TNPsiNP_MAP_rep1[rownames(total_TNPsiNP),])
+
+#the pdf format is 8-6 rep1
+get_density <-function(x,y,...){
+  dens <- MASS::kde2d(x, y, ...)
+  ix <- findInterval(x, dens$x)
+  iy <- findInterval(y, dens$y)
+  ii <- cbind(ix, iy)
+  return(dens$z[ii])
+}
+TNPsiNP_MAP_rep1$density <- get_density(TNPsiNP_MAP_rep1$X2iP2A.MAP, TNPsiNP_MAP_rep1$X2iP2AD.MAP,n = 1000)
+#dot2<-ggplot(TNPsiNP_MAP_rep1, aes(y=log2(as.numeric(as.character(X2iP2AD.MAP))), x=log2(as.numeric(as.character(X2iP2A.MAP))))) +
+
+p9<-ggplot(TNPsiNP_MAP_rep1) + 
+  geom_point(aes(x=log2(as.numeric(as.character(X2iP2A.MAP))), y=log2(as.numeric(as.character(X2iP2AD.MAP))), color = density)) + 
+  scale_color_viridis()+
+  guides(alpha="none") +
+  ylim(-8,0)+
+  xlim(-8,0)+
+  labs(x = "mRNA decay rate (log2) in mESC", y = "mRNA decay rate (log2) in T2iD")+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))
+
+p9<-p9+
+  geom_abline(slope=1,lwd=0.7,intercept = 0)
+plot(p9)
+t.test(TNPsiNP_MAP_rep1$X2iP2A.MAP, TNPsiNP_MAP_rep1$X2iP2AD.MAP, paired = TRUE)
+```
+
+
+### 10. Line Plot for FoldChange of Specific Genes Between Condition
+```{r "Line plot for FoldChange between condition"}
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("tidyverse")) install.packages("tidyverse")
+library("tidyverse")
+if (!require("plyr")) install.packages("plyr")
+library(plyr)
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("viridis")) install.packages("viridis")
+library(viridis)
+if (!require("magrittr")) install.packages("magrittr")
+library(magrittr)
+if (!require("ggpubr")) install.packages("ggpubr")
+library(ggpubr)
+summarySE_median <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                             conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  datac <- ddply(data, groupvars, .drop=.drop,.fun = function(xx, col) {
+    c(sum    = sum(as.numeric(as.character(xx[[col]]))),
+      N    = length2(xx[[col]]),
+      median = median(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+      sd   = sd(as.numeric(as.character(xx[[col]])))
+    )
+  },
+  measurevar
+  )
+  # Rename the "mean" column
+  # datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+#data_msn2msn_forbar_CFP <- summarySE_median(data_CFP_L2, measurevar="CFP", groupvars=c("frame"))
+
+summarySE_mean <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                           conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(sum    = sum(as.numeric(as.character(xx[[col]]))),
+                     mean = mean(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+                     sd   = sd(as.numeric(as.character(xx[[col]]))),
+                     N    = length2(xx[[col]])
+                   )
+                 },
+                 measurevar
+  )
+  # Rename the "mean" column
+  # datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+
+total_MAP_211119 <- as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\ana220511_inte_three\\total_MAP_211119.csv",header=TRUE,row.names=1))
+total_MAP_211205 <- as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\ana220511_inte_three\\total_MAP_211205.csv",header=TRUE,row.names=1))
+TNPsiNP_MAP_rep1 <- as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\ana220511_inte_three\\TNPsiNP_MAP.csv",header=TRUE,row.names=1))
+#delete genes which deg == 0
+keep.exprs1 <- rowSums(total_MAP_211119>0)>=ncol(total_MAP_211119)
+total_MAP_211119 <- total_MAP_211119[keep.exprs1,]
+
+keep.exprs2 <- rowSums(total_MAP_211205>0)>=ncol(total_MAP_211205)
+total_MAP_211205 <- total_MAP_211205[keep.exprs2,]
+
+keep.exprs3 <- rowSums(TNPsiNP_MAP_rep1>0)>=ncol(TNPsiNP_MAP_rep1)
+TNPsiNP_MAP_rep1 <- TNPsiNP_MAP_rep1[keep.exprs3,]
+total_TNPsiNP<-read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\perturbation_exp_0910\\SEQ220505_TNPsiNPrep1\\counts\\total_matrix_gene_ID_220505.csv",row.names = 1)
+#filter by Rcounts>50 >ncol/2 cpm(4.58)
+total_TNPsiNP<-total_TNPsiNP[,c(1,2,3,7,8,9)]
+keep.exprs_total <- rowSums(total_TNPsiNP>4.58)>=ncol(total_TNPsiNP)/2
+total_TNPsiNP <- total_TNPsiNP[keep.exprs_total,]
+TNPsiNP_MAP_rep1<-na.omit(TNPsiNP_MAP_rep1[rownames(total_TNPsiNP),])
+
+
+fc_TNPsiNP_MAP_rep1<-as.data.frame(cbind(log2(TNPsiNP_MAP_rep1$X2iP2Asi.MAP/TNPsiNP_MAP_rep1$X2iP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$X2iP2AD.MAP/TNPsiNP_MAP_rep1$X2iP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$priP2A.MAP/TNPsiNP_MAP_rep1$X2iP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$priP2AD.MAP/TNPsiNP_MAP_rep1$priP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$priPDAsi.MAP/TNPsiNP_MAP_rep1$priP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$priPDAsi.MAP/TNPsiNP_MAP_rep1$X2iP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$priP2AD.MAP/TNPsiNP_MAP_rep1$X2iP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$X2iP2A.MAP/TNPsiNP_MAP_rep1$LP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$LP2AD.MAP/TNPsiNP_MAP_rep1$LP2A.MAP),
+                                         log2(TNPsiNP_MAP_rep1$LP2Ssi.MAP/TNPsiNP_MAP_rep1$LP2A.MAP)))
+rownames(fc_TNPsiNP_MAP_rep1)<-rownames(TNPsiNP_MAP_rep1)
+colnames(fc_TNPsiNP_MAP_rep1)<-c("fc2isi_2i","fc2iD_2i","fcpri_2i","fcpriD_pri",
+                                 "fcprisi_pri","fcprisi_2i","fcpriD_2i","fc2i_lif","fclifD_lif","fclifsi_lif")
+#colnames(fc_TNPsiNP_MAP_rep1)<-c("a","b","c","d")
+
+test1<-fc_TNPsiNP_MAP_rep1[fc_TNPsiNP_MAP_rep1$fcpri_2i>1,]
+#colnames(fc_TNPsiNP_MAP_rep1)<-c("fc2isi_2i","fc2iD_2i","fcpri_2i","fcpriD_pri")
+test2<-cbind(test1$fcpri_2i,test1$fcpriD_pri,test1$fcprisi_2i)
+colnames(test2)<-c("a","b","c")
+rownames(test2)<-rownames(test1)
+
+data_CFP_L = matrix(nrow=1,ncol=3)
+for (n in 1:ncol(test2)) {
+  data_CFP_N = as.matrix(test2[,n])
+  data_CFP_NN = cbind(data_CFP_N,colnames(test2)[n],rownames(test2))
+  data_CFP_L = rbind(data_CFP_L, data_CFP_NN)
+}
+data_CFP_L<-data_CFP_L[-1,]
+colnames(data_CFP_L)<-c("fc","class","genes")
+fc_TNPsiNP_MAP_draw <- as.data.frame(data_CFP_L)
+
+p10_1<-ggplot(fc_TNPsiNP_MAP_draw, 
+       aes(x = class, y = as.numeric(as.character(fc)), group = genes))+
+  geom_line(colour = "gray",size = 0.3,alpha=0.2) +
+  labs(x = "Different perturbation", y = "mRNA decay rate FC(log2)")+
+  ylim(-5,5)+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=24),
+         axis.text.x = element_text(size=16),
+         axis.text.y = element_text(size=22),
+         axis.title = element_text(face="bold"))
+plot(p10_1)
+
+##draw it as bar plot
+pri_fc<-cbind(fc_TNPsiNP_MAP_rep1$fcpri_2i,
+              fc_TNPsiNP_MAP_rep1$fcpriD_2i,
+              fc_TNPsiNP_MAP_rep1$fcprisi_2i)
+rownames(pri_fc)<-rownames(TNPsiNP_MAP_rep1)
+colnames(pri_fc)<-c("fcpri_2i","fcpriD_2i","fcprisi_2i")
+data_CFP_L = matrix(nrow=1,ncol=3)
+for (n in 1:ncol(pri_fc)) {
+  data_CFP_N = as.matrix(pri_fc[,n])
+  data_CFP_NN = cbind(data_CFP_N,colnames(pri_fc)[n],rownames(pri_fc))
+  data_CFP_L = rbind(data_CFP_L, data_CFP_NN)
+}
+data_CFP_L<-data_CFP_L[-1,]
+colnames(data_CFP_L)<-c("fc","class","genes")
+fc_pri_draw <- as.data.frame(data_CFP_L)
+
+library(magrittr)
+library(ggpubr)
+#pri_fc
+#8*8
+p10_2<-ggplot(fc_pri_draw,aes(x = class, y = as.numeric(as.character(fc)), fill = class)) +
+  # geom_violin(aes(fill = class),trim = F) + 
+  #geom_boxplot(alpha=0.7,outlier.shape = NA,outlier.colour = NA) +
+  stat_boxplot(geom = 'errorbar', width = 0.1) + 
+  geom_boxplot(aes(fill = class), width = 0.2, show.legend = F,outlier.shape = NA,outlier.colour = NA) +
+  #geom_jitter(aes(shape = class)) + 
+  coord_trans(x = "identity", y = "identity", xlim = NULL, ylim = c(-2,3))+
+  stat_summary(fun = median, geom = 'point', color = 'dark grey', size = rel(2)) + 
+  #guides(shape = F, color = F) + 
+  labs(x = "Different perturbation", y = "mRNA decay rate FC(log2)")+
+  scale_fill_brewer(palette = 'Set3')+
+  theme_bw() +
+  theme( plot.title = element_text(hjust = 0.5),
+         text = element_text(size=22),
+         title=element_text(size = 30),
+         axis.title.x = element_text(size=24),
+         axis.title.y = element_text(size=24),
+         axis.text.x = element_text(size=16),
+         axis.text.y = element_text(size=22),
+         axis.title = element_text(face="bold"))
+plot(p10_2)
+```
+
+### 11. Bin Dot Plot
+```{r "Bin dot plot"}
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("tidyverse")) install.packages("tidyverse")
+library("tidyverse")
+if (!require("ggpubr")) install.packages("ggpubr")
+library("ggpubr")
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("forcats")) install.packages("forcats")
+library(forcats)
+if (!require("reshape")) install.packages("reshape")
+library(reshape)
+if (!require("kohonen")) install.packages("kohonen")
+library(kohonen)
+if (!require("RColorBrewer")) install.packages("RColorBrewer")
+library(RColorBrewer)
+summarySE_median <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                             conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(N    = length2(xx[[col]]),
+                     mean = mean(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+                     sd   = sd(as.numeric(as.character(xx[[col]])))
+                   )
+                 },
+                 measurevar
+  )
+  # Rename the "mean" column
+  datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+
+summarySE_mean <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                           conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(N    = length2(xx[[col]]),
+                     mean = mean(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+                     sd   = sd(as.numeric(as.character(xx[[col]])))
+                   )
+                 },
+                 measurevar
+  )
+  # Rename the "mean" column
+  datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}     #This is the basic function you need for summarizing the data, especially for error-bar plotting
+
+total_cpm<-as.data.frame(read.csv("D:\\Linlab\\草稿_article\\figure2\\ERT2_OCT4\\EO_191118\\trimmed_1227\\EO_lif_2i_corr.csv"))
+EO_191118<-as.data.frame(read.csv("D:\\Linlab\\草稿_article\\figure2\\ERT2_OCT4\\EO_191118\\trimmed_1227\\EO_191118.csv"),header=TRUE)
+EO_191118_MAP<-EO_191118[,c(grep("MAP",colnames(EO_191118)))]
+EO_191118_MAP<-cbind(EO_191118[,2],EO_191118_MAP)
+EO_191118_MAP<-na.omit(EO_191118_MAP)
+EO_191118_MAP<-EO_191118_MAP[!duplicated(EO_191118_MAP[,1]),]
+rownames(EO_191118_MAP)<-EO_191118_MAP[,1]
+#EO_191118_RC<-EO_191118[,c(grep("Readcount",colnames(EO_191118)))]
+corr_EO<-read.csv("D:\\Linlab\\草稿_article\\figure2\\ERT2_OCT4\\EO_191118\\trimmed_1227\\EO_lif_2i_corr.csv",row.names = 1)
+EO_191118_MAP<-na.omit(EO_191118_MAP[rownames(corr_EO),])
+
+corr_DR_2i<-cbind(corr_EO[,"corr_2i"],EO_191118_MAP[,"X2i0.MAP"])
+colnames(corr_DR_2i)<-c("corr_2i","dr_2i")
+corr_DR_lif<-cbind(corr_EO[,"corr_lif"],EO_191118_MAP[,"L0.MAP"])
+colnames(corr_DR_lif)<-c("corr_lif","dr_lif")
+corr_DR_2i<-as.data.frame(corr_DR_2i)
+corr_DR_lif<-as.data.frame(corr_DR_lif)
+
+bin_2i<-corr_DR_2i %>% mutate(new_bin  = cut(corr_2i, breaks=c(-1,-0.7,-0.4,0,0.4,0.7,1)))
+bin_2i_sum<-summary_matrix1 <- as.data.frame(summarySE_mean(bin_2i, measurevar="corr_2i", groupvars=c("new_bin")))
+bin_2i_sum
+bin_2i_sum2<-summary_matrix1 <- as.data.frame(summarySE_mean(bin_2i, measurevar="dr_2i", groupvars=c("new_bin")))
+bin_2i_sum2
+
+bin_lif<-corr_DR_lif %>% mutate(new_bin  = cut(corr_lif, breaks=c(-1,-0.7,-0.4,0,0.4,0.7,1)))
+bin_lif_sum<-summary_matrix1 <- as.data.frame(summarySE_mean(bin_lif, measurevar="corr_lif", groupvars=c("new_bin")))
+bin_lif_sum
+bin_lif_sum2<-summary_matrix1 <- as.data.frame(summarySE_mean(bin_lif, measurevar="dr_lif", groupvars=c("new_bin")))
+bin_lif_sum2
+#p1<-ggplot(bin_2i_sum2, aes(x=new_bin, y=dr_lif, color= TF)) +
+bin_lif_sum2<-cbind(bin_lif_sum2,"lif")
+bin_2i_sum2<-cbind(bin_2i_sum2,"x2i")
+colnames(bin_lif_sum2)<-colnames(bin_2i_sum2)
+bin_final<-rbind(bin_2i_sum2,bin_lif_sum2)
+colnames(bin_final)<-c("new_bin","N","dr","sd","se","ci","class")
+#draw the dot plot
+###size:8-6
+p11<-ggplot(bin_final, aes(x=new_bin, y=dr, color= class,group= class,label = N)) +
+  geom_point(size = 3) +
+  geom_line(aes(color=class))+
+  geom_errorbar(aes(ymin=dr-se, ymax=dr+se),
+                width=.3,size=1)+
+  geom_text(vjust = -1)+
+  scale_fill_brewer(palette = "Set3")+
+  labs(x = "Response Timing", y = "mRNA degradation rate")+
+  ylim(0,0.4)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA), 
+    panel.grid.minor = element_blank(), 
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+plot(p11)
+```
+
+### 12. PCA Dot Plot
+```{r "PCA dot plot"}
+if (!require("DESeq2")) BiocManager::install("DESeq2")
+library("DESeq2")
+if (!require("pheatmap")) BiocManager::install("pheatmap")
+library("pheatmap")
+dir = "D:\\Linlab\\OCT4 induction\\Function\\SEQ220117_TNP\\pca" ##this is the dir for saving data
+
+NP_TNP<-read.csv("D:\\Linlab\\OCT4 induction\\Function\\SEQ220117_TNP\\matrix\\total_count.csv",row.names = 1)
+NP_TNP<-as.matrix(NP_TNP)
+#We use the R function dist to calculate the Euclidean distance between samples. 
+#To ensure we have a roughly equal contribution from all genes, we use it on the VST data. 
+#We need to transpose the matrix of values using t, because the dist function expects the 
+#different samples to be rows of its argument, and different dimensions (here, genes) to be columns.
+vsd <- vst(NP_TNP, blind = FALSE)
+sampleDists <- dist(t(vsd))
+library("pheatmap")
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix( sampleDists )
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows = sampleDists,
+         clustering_distance_cols = sampleDists,
+         col = colors)
+
+#Another option for calculating sample distances is to use the Poisson Distance (Witten 2011), 
+#implemented in the PoiClaClu package. This measure of dissimilarity between counts also 
+#takes the inherent variance structure of counts into consideration when calculating the 
+#distances between samples. The PoissonDistance function takes the original count matrix 
+#(not normalized) with samples as rows instead of columns, so we need to transpose the counts in dds.
+library("PoiClaClu")
+poisd <- PoissonDistance(t(NP_TNP))
+samplePoisDistMatrix <- as.matrix( poisd$dd )
+rownames(samplePoisDistMatrix) <- colnames(NP_TNP)
+colnames(samplePoisDistMatrix) <- colnames(NP_TNP)
+pheatmap(samplePoisDistMatrix,
+         clustering_distance_rows = poisd$dd,
+         clustering_distance_cols = poisd$dd,
+         col = colors)
+
+
+#############read the csv count matrix and annotation matrix
+#############change it to DESeqDataSet
+
+cts <- as.matrix(NP_TNP)
+coldata <- read.csv("D:\\Linlab\\OCT4 induction\\Function\\SEQ220117_TNP\\pca\\anno_NP_all.csv")
+rownames(coldata)<-coldata[,1]
+coldata <- coldata[,c("condition","type")]
+coldata$condition <- factor(coldata$condition)
+coldata$type <- factor(coldata$type)
+
+library("DESeq2")
+minReplicateForReplace=Inf
+dds <- DESeqDataSetFromMatrix(countData = cts,
+                              colData = coldata,
+                              design = ~ condition)
+vsd <- vst(dds,blind = FALSE)
+head(assay(vsd), 3)
+colData(vsd)
+
+plotPCA(vsd)
+```
+
+### 13. Correlation Heatmap
+```{r "Correlation heatmap"}
+if (!require("DESeq2")) BiocManager::install("DESeq2")
+library("DESeq2")
+if (!require("pheatmap")) install.packages("pheatmap")
+
+###calculate the pearson correlation of each condition:
+all_marker_genes<-read.table("D:\\Linlab\\OCT4 induction\\Function\\SEQ220117_TNP\\pca\\marker_all.txt")
+NP_TNP<-read.csv("D:\\Linlab\\OCT4 induction\\Function\\SEQ220117_TNP\\matrix\\total_matrix_gene_ID.csv",row.names = 1)
+NP_TNP<-as.data.frame(NP_TNP)
+NP_TNP_marker<-na.omit(NP_TNP[all_marker_genes[,1],])
+cor_NP_TNP<-cor(NP_TNP_marker)
+library("corrplot")
+#corrplot(corre_sc_gene_cor)
+#col=colorRampPalette(c("navy", "white", "firebrick3"))
+#corrplot(corre_sc_gene_cor,add=TRUE, type="lower", method="number",cluster = TRUE,diag=FALSE,tl.pos="n", cl.pos="n",col=col(10))
+#corrplot(corre_sc_gene_cor,type="upper",cluster = TRUE,col=col(10),tl.pos="d")
+#library(RColorBrewer)square
+
+#calculate the z-score for the correlation matrix:
+scale_cor_NP_TNP <- round(t(apply(cor_NP_TNP, 1, scale)),2)
+colnames(scale_cor_NP_TNP) <- colnames(cor_NP_TNP)
+
+cor_NP_TNP_for_plot<-scale_cor_NP_TNP[c("TNP0","TNP3","TNP6","TNP9","TNP12","TNP24","TNP36","TNP48"),
+                                      c("TNPD0","TNPD3","TNPD6","TNPD9","TNPD12","TNPD24","TNPD36","TNPD48","TNPD60")]
+#corrplot(cor_NP_TNP_for_plot,title = "Correlation Plot", method = "circle",outline = T, addgrid.col = "darkgray", order="hclust", addrect = 6, rect.col = "black", rect.lwd = 4,cl.pos = "b", tl.col = "indianred4", tl.cex = 2, cl.cex = 2)
+bk = unique(c(seq(-1.5,1.5, length=100)))
+#PDF:8:6
+pheatmap(cor_NP_TNP_for_plot
+         # annotation_col = annotation_col,
+         ,breaks = bk
+         # ,color = colorRampPalette(c("#ffffcc", "#41b6c4", "#225ea8"))(100)
+         ,cluster_col= FALSE
+         ,cluster_rows = FALSE
+         ,show_colnames = T
+         ,clustering_distance_rows = drows
+         ,scale ="none"
+         ,show_rownames= T,
+         fontsize = 20) #change it to T if you want to show rownames
+
+pheatmap(cor_NP_TNP_for_plot
+         # annotation_col = annotation_col,
+         #,breaks = bk
+         # ,color = colorRampPalette(c("#ffffcc", "#41b6c4", "#225ea8"))(100)
+         ,cluster_col= FALSE
+         ,cluster_rows = FALSE
+         ,show_colnames = T
+         ,clustering_distance_rows = drows
+         ,scale ="row"
+         ,show_rownames= T,
+         fontsize = 20) #change it to T if you want to show rownames
+```
+
+### 14. Pie Plot and Horizental Bar Plot for GO Clusters
+```{r "Pie plot and horizental bar plot"}
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("limma")) install.packages("limma")
+library(limma) 
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("pheatmap")) install.packages("pheatmap")
+library(dplyr) 
+if (!require("tidyr")) install.packages("tidyr")
+library(tidyr) 
+if (!require("reshape2")) install.packages("reshape2")
+library(reshape2)
+
+data<-read.csv("D:\\Linlab\\草稿_article\\02_version1\\figure2\\04_go_plot\\go_2i_F48_P_allGENE_top10.csv")
+data$Group <- factor(data$Description,levels = data$Description)
+mylabel<-paste(data$X.,"%")
+mylabel<-rev(mylabel)
+PercentS<-rev(data$X.)
+####size 8-6
+p14_1<-ggplot(data,aes(x="",y=X.,fill=Group))+
+  geom_bar(stat = "identity",color="darkgrey")+
+  scale_fill_brewer(palette="Set3")+
+  coord_polar(theta = "y")+  
+  theme(axis.text.x = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())+
+  #geom_text(aes(y=percent,x=1),label=mylabel)
+  geom_text(aes(y=cumsum(PercentS)-PercentS/2,x=1.2),label=mylabel)
+plot(p14_1)
+###12-5
+data2<-data[order(data[,"Log10.P."],decreasing=T),]
+data2$Description = factor(data2$Description,levels = data2$Description)
+p14_2<-ggplot(data2[-1,], aes(x=Description, y=-as.numeric(as.character(Log10.P.)))) +
+  geom_bar(stat="identity", position=position_dodge(),width = 0.8,fill="white",color="blue")+
+  scale_fill_manual(values="#1a9850")+
+  #scale_fill_brewer(palette="Set3")+
+  # theme_minimal()+
+  coord_flip()+
+  labs(x = "Genes", y = "p-value (-log10 transformed)")+
+  #scale_fill_manual(values="#1a9850")+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+plot(p14_2)
+```
+
+------------------
+
+## Part II: Other refined pictures
+### 1. Dot Edge Density Plot
+```{r "Dot edge density plot"}
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("ggdendro")) install.packages("ggdendro")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("tidyverse")) install.packages("tidyverse")
+library("tidyverse")
+if (!require("ggpubr")) install.packages("ggpubr")
+library("ggpubr")
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("forcats")) install.packages("forcats")
+library(forcats)
+if (!require("reshape")) install.packages("reshape")
+library(reshape)
+if (!require("RColorBrewer")) install.packages("RColorBrewer")
+library(RColorBrewer)
+
+selected_MAP <- as.data.frame(read.csv("D:\\Linlab\\草稿_article\\figure1\\dot_edge_density\\matrix_selected_for_boxplot_DR.csv",row.names = 1))
+NP_total <- as.data.frame(read.csv("D:\\Linlab\\草稿_article\\figure1\\dot_edge_density\\NP1106.csv",row.names = 1))
+L2i0a <- as.data.frame(read.csv("D:\\Linlab\\草稿_article\\figure1\\dot_edge_density\\L2i0a.csv",row.names = 1))
+
+inte_genes<-Reduce(intersect, list(rownames(selected_MAP),
+                                    rownames(NP_total),
+                                    rownames(L2i0a)))
+###make it a new matrix:x-y-tag
+MAP<-selected_MAP[inte_genes,]
+colnames(MAP)<-c("2i","LIF","mEpiLC")
+MAP_new <- MAP %>% gather("2i","mEpiLC","LIF",
+                    key='class',value='MAP')
+MAP_new2 <-as.data.frame(MAP_new[,c("class","MAP")])
+total_cpm <- cbind(NP_total[inte_genes,],L2i0a[inte_genes,])
+colnames(total_cpm)<-c("2i","mEpiLC","LIF")
+total_cpm_new <- total_cpm %>% gather(colnames(total_cpm),
+                          key='class',value='cpm_value')
+total_cpm_new2 <-as.data.frame(total_cpm_new[,c("class","cpm_value")])
+##integrate these two matrix by class:
+matrix_total<-cbind(MAP_new2,total_cpm_new2)
+matrix_total<-as.data.frame(matrix_total[,-1])
+
+###the log(cpm)
+attach(matrix_total)
+matrix_total$cpm_value <- log(cpm_value)
+detach(matrix_total)
+attach(matrix_total)
+matrix_total$MAP <- log(matrix_total$MAP)
+detach(matrix_total)
+##draw the density plot for three group:
+matrix_total$class = with(matrix_total, reorder(class, MAP, median))
+ggscatterhist(
+  matrix_total, x = "MAP", y = "cpm_value",
+  color = "class", size = 2, alpha = 0.5,
+  palette = 'Set2',
+  #palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+  margin.params = list(fill = "class", color = "black", size = 0.2),
+  ggtheme = theme_bw(),
+  xlab="Log transformed mRNA decay rate",
+  ylab="Log transformed relative expression (cpm)",
+  xlim=c(-5,0)
+)
+```
+
+### 2. Bin Bar Plot
+```{r "Bin bar plot"}
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("gplots")) install.packages("gplots")
+library(gplots)
+if (!require("vegan")) install.packages("vegan")
+library(vegan)
+if (!require("permute")) install.packages("permute")
+library(permute)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("ggdendro")) BiocManager::install("ggdendro", version = "3.8")
+library("ggdendro")
+if (!require("cowplot")) install.packages("cowplot")
+library("cowplot")
+if (!require("curl")) install.packages("curl")
+library("curl")
+if (!require("ggpubr")) install.packages("ggpubr")
+library("ggpubr")
+if (!require("dplyr")) install.packages("dplyr")
+library(dplyr)
+if (!require("forcats")) install.packages("forcats")
+library(forcats)
+if (!require("reshape")) install.packages("reshape")
+library(reshape)
+if (!require("kohonen")) install.packages("kohonen")
+library(kohonen)
+if (!require("RColorBrewer")) install.packages("RColorBrewer")
+library(RColorBrewer)
+summarySE_median <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                             conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(N    = length2(xx[[col]]),
+                     mean = mean(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+                     sd   = sd(as.numeric(as.character(xx[[col]])))
+                   )
+                 },
+                 measurevar
+  )
+  # Rename the "mean" column
+  datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}
+
+summarySE_mean <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                           conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  # This does the summary. For each group's data frame, return a vector with
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(N    = length2(xx[[col]]),
+                     mean = mean(as.numeric(as.character(xx[[col]]))),   #replace the mean by median
+                     sd   = sd(as.numeric(as.character(xx[[col]])))
+                   )
+                 },
+                 measurevar
+  )
+  # Rename the "mean" column
+  datac <- rename(datac, c("mean" = measurevar))
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  return(datac)
+}     #This is the basic function you need for summarizing the data, especially for error-bar plotting
+
+integrate_all<-read.csv("D:\\Linlab\\OCT4 induction\\Function\\reanalysis_integrationALLEO_220908\\integrage_all_220908.csv",row.names = 1)
+
+nascent_cpm<-as.data.frame(cbind(integrate_all$s220128_EO0.MAP*integrate_all$s220128_EO0,
+                                 integrate_all$s220128_EO1.MAP*integrate_all$s220128_EO1,
+                                 integrate_all$s220128_EO3.MAP*integrate_all$s220128_EO3,
+                                 integrate_all$s220128_EO6.MAP*integrate_all$s220128_EO6,
+                                 integrate_all$s220128_EO9.MAP*integrate_all$s220128_EO9,
+                                 integrate_all$s220128_EO12.MAP*integrate_all$s220128_EO12,
+                                 integrate_all$s220716_EOPD.0.MAP*integrate_all$s220716_EOPD0,
+                                 integrate_all$s220716_EOPD.1.MAP*integrate_all$s220716_EOPD1,
+                                 integrate_all$s220716_EOPD.25.MAP*integrate_all$s220716_EOPD25,
+                                 integrate_all$s220716_EOPD.6.MAP*integrate_all$s220716_EOPD6,
+                                 integrate_all$s220716_EOPD.9.MAP*integrate_all$s220716_EOPD9,
+                                 integrate_all$s220716_EOPD.12.MAP*integrate_all$s220716_EOPD12))
+colnames(nascent_cpm)<-c("s220128_EO0","s220128_EO1","s220128_EO3","s220128_EO6","s220128_EO9","s220128_EO12",
+                         "s220716_EOPD0","s220716_EOPD1","s220716_EOPD3","s220716_EOPD6","s220716_EOPD9","s220716_EOPD12")
+rownames(nascent_cpm)<-rownames(integrate_all)
+total_cpm2<-integrate_all[,c("s220128_EO0","s220128_EO1","s220128_EO3","s220128_EO6","s220128_EO9","s220128_EO12",
+                             "s220716_EOPD0","s220716_EOPD1","s220716_EOPD25","s220716_EOPD6","s220716_EOPD9","s220716_EOPD12")]
+colnames(total_cpm2)<-c("s220128_EO0","s220128_EO1","s220128_EO3","s220128_EO6","s220128_EO9","s220128_EO12",
+                        "s220716_EOPD0","s220716_EOPD1","s220716_EOPD3","s220716_EOPD6","s220716_EOPD9","s220716_EOPD12")
+#for the separated matrix:
+total_EO0128 <- total_cpm2[,c(1:6)]
+nascent_EO0128 <- nascent_cpm[,c(1:6)]
+keep.exprs1 <- rowSums(nascent_EO0128>1)>=2
+nascent_EO0128 <- nascent_EO0128[keep.exprs1,]
+
+
+total_EOPD <- total_cpm2[,c(7:12)]
+nascent_EOPD <- nascent_cpm[,c(7:12)]
+keep.exprs1 <- rowSums(nascent_EOPD>1)>=2
+nascent_EOPD <- nascent_EOPD[keep.exprs1,]
+
+genes<-intersect(rownames(nascent_EOPD),rownames(nascent_EO0128))
+total_EO0128 <- total_EO0128[genes,]
+total_EOPD <- total_EOPD[genes,]
+nascent_EOPD<-nascent_EOPD[genes,]
+nascent_EO0128<-nascent_EO0128[genes,]
+##replace 0 by 0.01
+nascent_EO0128<-replace(nascent_EO0128, nascent_EO0128==0, 0.01)
+nascent_EOPD<-replace(nascent_EOPD, nascent_EOPD==0, 0.01)
+total_EOPD<-replace(total_EOPD, total_EOPD==0, 0.01)
+total_EO0128<-replace(total_EO0128, total_EO0128==0, 0.01)
+
+###calculate the fold change
+##nascent EO0128:
+fcn_EO0128_0<-log2(nascent_EO0128[,"s220128_EO0"]/nascent_EO0128[,"s220128_EO0"])
+fcn_EO0128_1<-log2(nascent_EO0128[,"s220128_EO1"]/nascent_EO0128[,"s220128_EO0"])
+fcn_EO0128_2<-log2(nascent_EO0128[,"s220128_EO3"]/nascent_EO0128[,"s220128_EO0"])
+fcn_EO0128_3<-log2(nascent_EO0128[,"s220128_EO6"]/nascent_EO0128[,"s220128_EO0"])
+fcn_EO0128_4<-log2(nascent_EO0128[,"s220128_EO9"]/nascent_EO0128[,"s220128_EO0"])
+fcn_EO0128_5<-log2(nascent_EO0128[,"s220128_EO12"]/nascent_EO0128[,"s220128_EO0"])
+nascent_EO0128_fc <- as.data.frame(cbind(fcn_EO0128_0,fcn_EO0128_1,fcn_EO0128_2,fcn_EO0128_3,fcn_EO0128_4,fcn_EO0128_5))
+
+##draw the heatmap:
+bk = unique(c(seq(-1,1, length=100)))
+##nascent EOPD:
+fcn_EOPD_0<-log2(nascent_EOPD[,"s220716_EOPD0"]/nascent_EOPD[,"s220716_EOPD0"])
+fcn_EOPD_1<-log2(nascent_EOPD[,"s220716_EOPD1"]/nascent_EOPD[,"s220716_EOPD0"])
+fcn_EOPD_2<-log2(nascent_EOPD[,"s220716_EOPD3"]/nascent_EOPD[,"s220716_EOPD0"])
+fcn_EOPD_3<-log2(nascent_EOPD[,"s220716_EOPD6"]/nascent_EOPD[,"s220716_EOPD0"])
+fcn_EOPD_4<-log2(nascent_EOPD[,"s220716_EOPD9"]/nascent_EOPD[,"s220716_EOPD0"])
+fcn_EOPD_5<-log2(nascent_EOPD[,"s220716_EOPD12"]/nascent_EOPD[,"s220716_EOPD0"])
+nascent_EOPD_fc <- as.data.frame(cbind(fcn_EOPD_0,fcn_EOPD_1,fcn_EOPD_2,fcn_EOPD_3,fcn_EOPD_4,fcn_EOPD_5))
+##total EO0128:
+fc_EO0128_0<-log2(total_EO0128[,"s220128_EO0"]/total_EO0128[,"s220128_EO0"])
+fc_EO0128_1<-log2(total_EO0128[,"s220128_EO1"]/total_EO0128[,"s220128_EO0"])
+fc_EO0128_2<-log2(total_EO0128[,"s220128_EO3"]/total_EO0128[,"s220128_EO0"])
+fc_EO0128_3<-log2(total_EO0128[,"s220128_EO6"]/total_EO0128[,"s220128_EO0"])
+fc_EO0128_4<-log2(total_EO0128[,"s220128_EO9"]/total_EO0128[,"s220128_EO0"])
+fc_EO0128_5<-log2(total_EO0128[,"s220128_EO12"]/total_EO0128[,"s220128_EO0"])
+total_EO0128_fc <- as.data.frame(cbind(fc_EO0128_0,fc_EO0128_1,fc_EO0128_2,fc_EO0128_3,fc_EO0128_4,fc_EO0128_5))
+##total EOPD:
+fc_EOPD_0<-log2(total_EOPD[,"s220716_EOPD0"]/total_EOPD[,"s220716_EOPD0"])
+fc_EOPD_1<-log2(total_EOPD[,"s220716_EOPD1"]/total_EOPD[,"s220716_EOPD0"])
+fc_EOPD_2<-log2(total_EOPD[,"s220716_EOPD3"]/total_EOPD[,"s220716_EOPD0"])
+fc_EOPD_3<-log2(total_EOPD[,"s220716_EOPD6"]/total_EOPD[,"s220716_EOPD0"])
+fc_EOPD_4<-log2(total_EOPD[,"s220716_EOPD9"]/total_EOPD[,"s220716_EOPD0"])
+fc_EOPD_5<-log2(total_EOPD[,"s220716_EOPD12"]/total_EOPD[,"s220716_EOPD0"])
+total_EOPD_fc <- as.data.frame(cbind(fc_EOPD_0,fc_EOPD_1,fc_EOPD_2,fc_EOPD_3,fc_EOPD_4,fc_EOPD_5))
+
+total_fc<-cbind(nascent_EO0128_fc,total_EO0128_fc,nascent_EOPD_fc,total_EOPD_fc)
+
+all_matrix_selected<-as.data.frame(cbind(fcn_EO0128_1,fcn_EOPD_1))
+##bin and draw the bar plot:
+bin_EO<-all_matrix_selected %>% mutate(new_bin  = cut(fcn_EO0128_1, breaks=c(-11,-1,-0.5,0,0.5,1,20)))
+bin_EO_sum<-summary_matrix1 <- as.data.frame(summarySE_mean(bin_EO, measurevar="fcn_EO0128_1", groupvars=c("new_bin")))
+bin_EO_sum
+
+bin_EOPD<-all_matrix_selected %>% mutate(new_bin  = cut(fcn_EOPD_1, breaks=c(-11,-1,-0.5,0,0.5,1,20)))
+bin_EOPD_sum<-summary_matrix1 <- as.data.frame(summarySE_mean(bin_EOPD, measurevar="fcn_EOPD_1", groupvars=c("new_bin")))
+bin_EOPD_sum
+
+bin_final<-rbind(as.matrix(cbind(bin_EO_sum[,c(1,2)],"bin_EO")),
+                 as.matrix(cbind(bin_EOPD_sum[,c(1,2)],"bin_EOPD")))
+bin_final<-as.data.frame(bin_final)
+bin_final[,"N"]<-c(bin_EO_sum[,"N"]*100/nrow(all_matrix_selected),bin_EOPD_sum[,"N"]*100/nrow(all_matrix_selected))
+#bin_final2<-bin_final[c(1:5,8:19,22:28),]
+colnames(bin_final)<-c("new_bin","N","class")
+bin_final$new_bin<-factor(bin_final$new_bin, levels = c('(-11,-1]', '(-1,-0.5]', '(-0.5,0]', '(0,0.5]', '(0.5,1]', '(1,20]'))
+###save size 9-5
+p22 <- ggplot(bin_final, aes( new_bin, weight=N,fill = class)) +
+  #geom_hline(yintercept = seq(10, 50, 10), color = 'gray') +
+  geom_bar(color = "black", width = .7, position = 'dodge') +
+  labs( y = 'Percentage of transcripts (%)') +
+  scale_fill_brewer(palette = "Set3")+
+  #scale_y_continuous(expand = c(0,0)) +
+  theme_classic()
+
+plot(p22)
+```
+
+### 3. Bar Plot
+```{r "Bar plot"}
+library(ggplot2)
+library(gplots)
+library("ggdendro")
+library("cowplot")
+library("curl")
+
+human<-as.data.frame(read.csv("D:\\Linlab\\DuPengLAB\\human_mouse_embryonic_early\\human.csv",row.names = 1))
+mouse<-as.data.frame(read.csv("D:\\Linlab\\DuPengLAB\\human_mouse_embryonic_early\\mouse.csv",row.names = 1))
+
+total_matrix_human<-cbind(t(human["PABPC1",]),colnames(human))
+total_matrix_mouse<-cbind(t(mouse["Pabpc1",]),colnames(mouse))
+colnames(total_matrix_mouse)<-colnames(total_matrix_human)
+total_matrix_2_pab<-as.data.frame(rbind(total_matrix_human,total_matrix_mouse))
+##draw the bar-plot
+###draw the bar_plot
+total_matrix_human<-as.data.frame(total_matrix_human)
+
+total_matrix_human<-as.data.frame(read.csv("D:\\Linlab\\DuPengLAB\\human_mouse_embryonic_early\\human_Pabpc1.csv"))
+total_matrix_mouse<-as.data.frame(read.csv("D:\\Linlab\\DuPengLAB\\human_mouse_embryonic_early\\mouse_Pabpc1.csv"))
+total_matrix_human$V2 = with(total_matrix_human, reorder(tag, PABPC1, mean))  ##order theclss by median value
+ggplot(data=total_matrix_human, aes(x=tag, y=as.numeric(as.character(PABPC1)), fill=tag)) +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(palette="Set3")+
+  ylim(0,350)+
+  # theme_minimal()+
+  labs(x = "Human early embryonic development", y = "Relative expression of Pabpc1")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+```
+
+### 4. Violin Plot
+```{r "Violin plot"}
+library(ggplot2)
+library(dplyr)
+#library(easyGgplot2)
+#library(easyGgplot2)
+exon<-as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\database_datasets\\RNA-seq_INSPECT\\test_inspect\\DATA_0712_ESC\\ESC_DNMT1KO\\ESC_DNMT1KO_rep\\exon_exp.csv"))
+intron<-as.data.frame(read.csv("D:\\Linlab\\OCT4 induction\\database_datasets\\RNA-seq_INSPECT\\test_inspect\\DATA_0712_ESC\\ESC_DNMT1KO\\ESC_DNMT1KO_rep\\intron_exp.csv"))
+#rep1->d0_control  rep2-->2i
+######for KO mESCs#######
+rate_d0_DNMT1_ko<-intron[,"d0_DNMT1_ko"]/exon[,"d0_DNMT1_ko"]
+rate_d0_DNMT1_ko[intron[,"d0_DNMT1_ko"] <= 0.2] <- NA
+rate_d0_DNMT1_ko[exon[,"d0_DNMT1_ko"] <= 0.2] <- NA
+rate_d0_DNMT1_ko<-as.data.frame(cbind(rate_d0_DNMT1_ko,"0"))
+colnames(rate_d0_DNMT1_ko)<-c("value","group")
+rownames(rate_d0_DNMT1_ko)<-exon[,1]
+
+rate_d1_DNMT1_ko<-intron[,"d1_DNMT1_ko"]/exon[,"d1_DNMT1_ko"]
+rate_d1_DNMT1_ko[intron[,"d1_DNMT1_ko"] <= 0.2] <- NA
+rate_d1_DNMT1_ko[exon[,"d1_DNMT1_ko"] <= 0.2] <- NA
+rate_d1_DNMT1_ko<-as.data.frame(cbind(rate_d1_DNMT1_ko,"1"))
+colnames(rate_d1_DNMT1_ko)<-c("value","group")
+rownames(rate_d1_DNMT1_ko)<-exon[,1]
+
+rate_d3_DNMT1_ko<-intron[,"d3_DNMT1_ko"]/exon[,"d3_DNMT1_ko"]
+rate_d3_DNMT1_ko[intron[,"d3_DNMT1_ko"] <= 0.2] <- NA
+rate_d3_DNMT1_ko[exon[,"d3_DNMT1_ko"] <= 0.2] <- NA
+rate_d3_DNMT1_ko<-as.data.frame(cbind(rate_d3_DNMT1_ko,"3"))
+colnames(rate_d3_DNMT1_ko)<-c("value","group")
+rownames(rate_d3_DNMT1_ko)<-exon[,1]
+
+rate_d6_DNMT1_ko<-intron[,"d6_DNMT1_ko"]/exon[,"d6_DNMT1_ko"]
+rate_d6_DNMT1_ko[intron[,"d6_DNMT1_ko"] <= 0.2] <- NA
+rate_d6_DNMT1_ko[exon[,"d6_DNMT1_ko"] <= 0.2] <- NA
+rate_d6_DNMT1_ko<-as.data.frame(cbind(rate_d6_DNMT1_ko,"6"))
+colnames(rate_d6_DNMT1_ko)<-c("value","group")
+rownames(rate_d6_DNMT1_ko)<-exon[,1]
+
+rate_d9_DNMT1_ko<-intron[,"d9_DNMT1_ko"]/exon[,"d9_DNMT1_ko"]
+rate_d9_DNMT1_ko[intron[,"d9_DNMT1_ko"] <= 0.2] <- NA
+rate_d9_DNMT1_ko[exon[,"d9_DNMT1_ko"] <= 0.2] <- NA
+rate_d9_DNMT1_ko<-as.data.frame(cbind(rate_d9_DNMT1_ko,"9"))
+colnames(rate_d9_DNMT1_ko)<-c("value","group")
+rownames(rate_d9_DNMT1_ko)<-exon[,1]
+
+rate_d11_DNMT1_ko<-intron[,"d11_DNMT1_ko"]/exon[,"d11_DNMT1_ko"]
+rate_d11_DNMT1_ko[intron[,"d11_DNMT1_ko"] <= 0.2] <- NA
+rate_d11_DNMT1_ko[exon[,"d11_DNMT1_ko"] <= 0.2] <- NA
+rate_d11_DNMT1_ko<-as.data.frame(cbind(rate_d11_DNMT1_ko,"99"))
+colnames(rate_d11_DNMT1_ko)<-c("value","group")
+rownames(rate_d11_DNMT1_ko)<-exon[,1]
+
+rate_d17_DNMT1_ko<-intron[,"d17_DNMT1_ko"]/exon[,"d17_DNMT1_ko"]
+rate_d17_DNMT1_ko[intron[,"d17_DNMT1_ko"] <= 0.2] <- NA
+rate_d17_DNMT1_ko[exon[,"d17_DNMT1_ko"] <= 0.2] <- NA
+rate_d17_DNMT1_ko<-as.data.frame(cbind(rate_d17_DNMT1_ko,"999"))
+colnames(rate_d17_DNMT1_ko)<-c("value","group")
+rownames(rate_d17_DNMT1_ko)<-exon[,1]
+
+rate_d25_DNMT1_ko<-intron[,"d25_DNMT1_ko"]/exon[,"d25_DNMT1_ko"]
+rate_d25_DNMT1_ko[intron[,"d25_DNMT1_ko"] <= 0.2] <- NA
+rate_d25_DNMT1_ko[exon[,"d25_DNMT1_ko"] <= 0.2] <- NA
+rate_d25_DNMT1_ko<-as.data.frame(cbind(rate_d25_DNMT1_ko,"9999"))
+colnames(rate_d25_DNMT1_ko)<-c("value","group")
+rownames(rate_d25_DNMT1_ko)<-exon[,1]
+
+rate_total<-rbind(rate_d0_DNMT1_ko,rate_d1_DNMT1_ko,rate_d3_DNMT1_ko,rate_d6_DNMT1_ko,rate_d9_DNMT1_ko,rate_d11_DNMT1_ko,rate_d17_DNMT1_ko,rate_d25_DNMT1_ko)
+
+rate_total2<-na.omit(rate_total)
+rate_total2<-as.data.frame(rate_total2)
+colnames(rate_total2)<-c("half_life","class")
+
+#violin plot:
+#pdf(file="violin_plot_DNMT1_KO.pdf",width = 10,height = 10)
+p24<-ggplot(rate_total2, aes(x = class, y = log2(as.numeric(as.character(half_life)))))+
+  geom_violin()+
+  ylim(-11,5)+
+  ggtitle("DNMT1_KO mESCs") +
+  geom_violin(aes(fill = class))+
+  labs(y = "log2(Degradation rate) (intron/exon)", x = "days after differentiation")+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA), 
+    panel.grid.minor = element_blank(), 
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 36),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=26),
+    axis.text.y = element_text(size=22))
+plot(p24)
+#dev.off()
+```
+
+### 5. A Length Distribution and Uridylation
+```{r "A length distribution and uridylation"}
+library("devtools")
+library("tidyr")
+library("ggplot2")
+
+U_0h<-read.table("D:\\Linlab\\OCT4 induction\\mechanism\\PIPA_seq\\PIPA-0916\\lyx1117\\ON68910_3Alength_Tadd.txt",header=FALSE)
+U_0h<-as.data.frame(cbind(U_0h,replace(U_0h[,2], U_0h[,2]>1, 1)))
+colnames(U_0h)<-c("A_length","A_counts","A_1")
+U_6h<-read.table("D:\\Linlab\\OCT4 induction\\mechanism\\PIPA_seq\\PIPA-0916\\lyx1117\\ON68910_2Alength_Tadd.txt",header=FALSE)
+U_6h<-as.data.frame(cbind(U_6h,replace(U_6h[,2], U_6h[,2]>1, 1)))
+colnames(U_6h)<-c("A_length","A_counts","A_1")
+
+col_label=c("A_length","N","A_1","sd","se","ci","Condition")
+###the A_1 is 100%
+data_NP_0h <- summarySE_mean(U_0h, measurevar="A_1", groupvars=c("A_length"))
+data_NP_0h1<-cbind(data_NP_0h,"txt_3")
+colnames(data_NP_0h1)<-col_label
+data_NP_6h <- summarySE_mean(U_6h, measurevar="A_1", groupvars=c("A_length"))
+data_NP_6h1 <- cbind(data_NP_6h,"txt_2")
+colnames(data_NP_6h1)<-col_label
+
+data_msn2msn_forline<-as.data.frame(rbind(data_NP_0h1,data_NP_6h1))
+
+cell_number = as.numeric(as.character(data_msn2msn_forline[1,"N"]))
+#pdf(file =paste("Trajectory_",stress,"_",promoter,"_",strain,".pdf",collapse=NULL),width = 15,height = 10)
+cc<-c("cyan3","orange","Violet")
+#ymaa=250
+#ymii=min(as.numeric(as.character(data_msn2msn_forline[,"FP"])))
+p25<-ggplot(data_msn2msn_forline, aes(x=A_length,y=A_1,group=Condition,col=Condition))  + 
+  geom_line(size=2)+
+#  annotate("rect", xmin=responsetime, xmax=T_dur, ymin=ymii, ymax=ymaa, alpha=.1, fill="gray8")+
+ # annotate("rect", xmin=T_dur+0.5, xmax=movie_time, ymin=ymii, ymax=ymaa, alpha=.1, fill="dimgray")+
+  scale_colour_manual(values=cc)+   #change the colour value of the curve
+  labs(x = "Poly(A)_length", y = "Fraction of uridylated transcripts",
+       title = "Uridylation frequency distribution")+
+  theme_bw()+
+  theme(
+    text = element_text(size=30),
+    panel.background = element_rect(fill = "transparent",colour = NA), 
+    panel.grid.minor = element_blank(), 
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=22),
+    axis.text.y = element_text(size=22))
+plot(p25)
+```
+
+### 6. Dot Plot for Last 6 Position
+```{r "Dot plot for last 6 position"}
+library("ggplot2")
+less30nt_stat<-read.csv("D:\\Linlab\\OCT4 induction\\mechanism\\PIPA_seq\\PIPA-220214\\results\\last3\\initial_pos1_pos2_for_pos_change.csv",row.names = 1,header = TRUE)
+
+less30nt_stat<-less30nt_stat[c("2iP2A","2iP2AD"),]
+data_CFP_L = matrix(nrow=1,ncol=3)
+for (n in 1:ncol(less30nt_stat)) {
+  data_CFP_N = as.matrix(less30nt_stat[,n])
+  data_CFP_NN = cbind(data_CFP_N,colnames(less30nt_stat)[n],rownames(less30nt_stat))
+  data_CFP_L = rbind(data_CFP_L, data_CFP_NN)
+}
+data_CFP_L<-as.data.frame(data_CFP_L[-1,])
+colnames(data_CFP_L)<-c("Ratio","Group","Condition")
+
+ggplot(data=data_CFP_L) +
+  geom_point(aes(x=Group, y=as.numeric(as.character(Ratio))*100,
+                 shape=Condition, color=Condition,fill=Condition),size=6)+
+  scale_shape_manual(values = c(15,16,17,18,19))+
+  scale_fill_brewer(palette="Paired")+
+  # theme_minimal()+
+  labs(x = "Style", y = "Percent of uridylated transcripts")+
+  #scale_colour_manual(values=cc)+
+  theme_bw()+
+  theme(
+    text = element_text(size=22),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+    panel.grid.minor = element_blank(),
+    axis.text=element_text(color='black'),
+    plot.title = element_text(hjust = 0.5),
+    title=element_text(size = 30),
+    axis.title.x = element_text(size=24),
+    axis.title.y = element_text(size=24),
+    axis.text.x = element_text(size=16),
+    axis.text.y = element_text(size=22))
+```
+
